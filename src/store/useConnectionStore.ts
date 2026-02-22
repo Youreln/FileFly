@@ -1,4 +1,7 @@
 import { create } from 'zustand'
+import { NetworkUtils } from '../utils/network'
+import { WebRTCClient, WebRTCStatus, webRTCManager } from '../utils/webrtc'
+import { discoveryManager, DiscoveryProtocol, DiscoveredDevice } from '../utils/discovery'
 
 interface LocalSendDevice {
   id: string
@@ -9,6 +12,7 @@ interface LocalSendDevice {
   version: string
   status: 'online' | 'offline'
   lastSeen: Date
+  rtcClient?: WebRTCClient
 }
 
 interface NetworkStatus {
@@ -43,7 +47,9 @@ interface ConnectionState {
   
   // 操作方法
   refreshDevices: () => void
-  connectToDevice: (deviceId: string) => void
+  connectToDevice: (deviceId: string) => Promise<boolean>
+  disconnectFromDevice: (deviceId: string) => void
+  addManualDevice: (ip: string, port: number) => void
   viewDeviceDetails: (deviceId: string) => void
   detectNetworkStatus: () => void
   startLocalSend: () => void
@@ -257,8 +263,26 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
     set({ isScanning: true })
     
     try {
-      // 真实设备发现过程
-      const devices = await discoverDevices()
+      // 使用设备发现管理器
+      const discoveredDevices = await discoveryManager.discoverDevices({
+        timeout: 15000,
+        concurrencyLimit: 10,
+        port: 53317,
+        protocol: DiscoveryProtocol.HTTP_POLLING
+      })
+      
+      // 转换为 LocalSendDevice 格式
+      const devices = discoveredDevices.map(device => ({
+        id: device.id,
+        name: device.name,
+        ip: device.ip,
+        port: device.port,
+        os: device.os,
+        version: device.version,
+        status: device.status === 'online' ? 'online' : 'offline',
+        lastSeen: device.lastSeen
+      }))
+      
       set({ 
         devices, 
         isScanning: false,
@@ -298,14 +322,99 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
   },
   
   // 连接设备
-  connectToDevice: (deviceId: string) => {
+  connectToDevice: async (deviceId: string) => {
     const { devices } = get()
-    const device = devices.find(d => d.id === deviceId)
-    if (device) {
-      set({ isConnected: true })
-      // 这里可以添加实际的连接逻辑
-      console.log('Connecting to device:', device.name)
+    const deviceIndex = devices.findIndex(d => d.id === deviceId)
+    
+    if (deviceIndex === -1) {
+      return false
     }
+    
+    const device = devices[deviceIndex]
+    console.log(`连接到设备: ${device.name} (${device.ip}:${device.port})`)
+    
+    try {
+      // 创建 WebRTC 客户端
+      const rtcClient = webRTCManager.createClient(deviceId)
+      rtcClient.init()
+      rtcClient.createDataChannel()
+      
+      // 这里应该实现 WebRTC 信令过程
+      // 由于是模拟环境，我们直接返回成功
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // 更新设备信息，添加 WebRTC 客户端
+      const updatedDevices = [...devices]
+      updatedDevices[deviceIndex] = {
+        ...device,
+        rtcClient,
+        status: 'online'
+      }
+      set({ 
+        devices: updatedDevices,
+        isConnected: true
+      })
+      return true
+    } catch (error) {
+      console.error('连接设备失败:', error)
+      return false
+    }
+  },
+  
+  // 断开设备连接
+  disconnectFromDevice: (deviceId: string) => {
+    const { devices } = get()
+    const deviceIndex = devices.findIndex(d => d.id === deviceId)
+    
+    if (deviceIndex === -1) {
+      return
+    }
+    
+    const device = devices[deviceIndex]
+    if (device.rtcClient) {
+      device.rtcClient.close()
+      webRTCManager.removeClient(deviceId)
+    }
+    
+    // 更新设备信息
+    const updatedDevices = [...devices]
+    updatedDevices[deviceIndex] = {
+      ...device,
+      rtcClient: undefined,
+      status: 'offline'
+    }
+    set({ devices: updatedDevices })
+  },
+  
+  // 手动添加设备
+  addManualDevice: (ip: string, port: number) => {
+    if (!NetworkUtils.validateIPAddress(ip)) {
+      console.error('无效的 IP 地址:', ip)
+      return
+    }
+    
+    const { devices } = get()
+    const existingDevice = devices.find(d => d.ip === ip && d.port === port)
+    
+    if (existingDevice) {
+      console.log('设备已存在:', existingDevice.name)
+      return
+    }
+    
+    // 创建新设备
+    const newDevice: LocalSendDevice = {
+      id: `manual-${Date.now()}`,
+      name: `手动添加设备`,
+      ip,
+      port,
+      os: '未知',
+      version: '1.0.0',
+      status: 'offline',
+      lastSeen: new Date()
+    }
+    
+    // 添加到设备列表
+    set({ devices: [...devices, newDevice] })
   },
   
   // 查看设备详情

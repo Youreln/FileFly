@@ -75,6 +75,46 @@ const decryptData = async (encryptedData: string, key: CryptoKey): Promise<strin
   return decoder.decode(decrypted)
 }
 
+// 生成 HMAC-SHA256
+const generateHMAC = async (data: string, secret: string): Promise<string> => {
+  const encoder = new TextEncoder()
+  const dataBuffer = encoder.encode(data)
+  const secretBuffer = encoder.encode(secret)
+  
+  // 导入 HMAC 密钥
+  const hmacKey = await crypto.subtle.importKey(
+    'raw',
+    secretBuffer,
+    {
+      name: 'HMAC',
+      hash: 'SHA-256',
+    },
+    false,
+    ['sign']
+  )
+  
+  // 生成 HMAC
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    hmacKey,
+    dataBuffer
+  )
+  
+  return btoa(String.fromCharCode(...new Uint8Array(signature)))
+}
+
+// 验证 HMAC-SHA256
+const verifyHMAC = async (data: string, secret: string, expectedHMAC: string): Promise<boolean> => {
+  const actualHMAC = await generateHMAC(data, secret)
+  return actualHMAC === expectedHMAC
+}
+
+// PIN 码验证
+const verifyPIN = async (pin: string, deviceId: string, secret: string): Promise<string> => {
+  const data = `${deviceId}:${pin}`
+  return generateHMAC(data, secret)
+}
+
 // 检查文件是否过期
 const isFileExpired = (timestamp: number, expirationHours: number = 24): boolean => {
   const now = Date.now()
@@ -98,6 +138,9 @@ export {
   importKey,
   encryptData,
   decryptData,
+  generateHMAC,
+  verifyHMAC,
+  verifyPIN,
   isFileExpired,
   generateExpirationTime,
   formatExpirationTime

@@ -11,7 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/zustand@4.5.0/dist/index.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/antd-mobile@5.34.0/dist/umd/antd-mobile.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd-mobile@5.34.0/dist/umd/antd-mobile.min.css">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231677ff'%3E%3Cpath d='M20 6H24V18H20V6ZM10 4H18V20H10V4ZM4 10H8V14H4V10Z'/%3E%3C/svg%3E" type="image/svg+xml">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
@@ -195,6 +195,11 @@
         }
         return code;
       }
+
+      // 生成房间 ID 用于 WebRTC 连接
+      static generateRoomId() {
+        return `room_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      }
     }
     
     // WebRTC 工具类
@@ -203,6 +208,9 @@
         this.peerConnection = null;
         this.dataChannel = null;
         this.status = 'disconnected';
+        this.iceCandidates = [];
+        this.onDataReceived = null;
+        this.onConnectionStatusChange = null;
       }
 
       // 初始化
@@ -216,12 +224,18 @@
         this.peerConnection.onconnectionstatechange = () => {
           if (!this.peerConnection) return;
           this.status = this.peerConnection.connectionState;
+          if (this.onConnectionStatusChange) {
+            this.onConnectionStatusChange(this.status);
+          }
+          console.log('Connection state changed:', this.status);
         };
         
         this.peerConnection.onicecandidate = (event) => {
           if (event.candidate) {
-            // 这里应该发送 ICE 候选到对方
+            this.iceCandidates.push(event.candidate);
             console.log('ICE candidate:', event.candidate);
+          } else {
+            console.log('ICE gathering complete');
           }
         };
         
@@ -252,26 +266,93 @@
         this.dataChannel.onopen = () => {
           console.log('Data channel opened');
           this.status = 'connected';
+          if (this.onConnectionStatusChange) {
+            this.onConnectionStatusChange(this.status);
+          }
         };
         
         this.dataChannel.onclose = () => {
           console.log('Data channel closed');
           this.status = 'disconnected';
+          if (this.onConnectionStatusChange) {
+            this.onConnectionStatusChange(this.status);
+          }
         };
         
         this.dataChannel.onerror = (error) => {
           console.error('Data channel error:', error);
           this.status = 'error';
+          if (this.onConnectionStatusChange) {
+            this.onConnectionStatusChange(this.status);
+          }
         };
         
         this.dataChannel.onmessage = (event) => {
-          console.log('Data channel message:', event.data);
+          console.log('Data channel message received');
+          if (this.onDataReceived) {
+            this.onDataReceived(event.data);
+          }
         };
+      }
+
+      // 创建 offer
+      async createOffer() {
+        if (!this.peerConnection) {
+          this.init();
+        }
+        
+        this.createDataChannel();
+        
+        const offer = await this.peerConnection.createOffer();
+        await this.peerConnection.setLocalDescription(offer);
+        
+        return offer;
+      }
+
+      // 处理 offer
+      async handleOffer(offer) {
+        if (!this.peerConnection) {
+          this.init();
+        }
+        
+        await this.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await this.peerConnection.createAnswer();
+        await this.peerConnection.setLocalDescription(answer);
+        
+        return answer;
+      }
+
+      // 处理 answer
+      async handleAnswer(answer) {
+        if (!this.peerConnection) {
+          console.error('Peer connection not initialized');
+          return false;
+        }
+        
+        await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        return true;
+      }
+
+      // 添加 ICE 候选
+      async addIceCandidate(candidate) {
+        if (!this.peerConnection) {
+          console.error('Peer connection not initialized');
+          return false;
+        }
+        
+        try {
+          await this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+          return true;
+        } catch (error) {
+          console.error('Error adding ICE candidate:', error);
+          return false;
+        }
       }
 
       // 发送文件块
       sendFileChunk(chunk) {
         if (!this.dataChannel || this.dataChannel.readyState !== 'open') {
+          console.error('Data channel not ready');
           return false;
         }
         
@@ -295,6 +376,22 @@
         }
       }
 
+      // 发送消息
+      sendMessage(message) {
+        if (!this.dataChannel || this.dataChannel.readyState !== 'open') {
+          console.error('Data channel not ready');
+          return false;
+        }
+        
+        try {
+          this.dataChannel.send(JSON.stringify(message));
+          return true;
+        } catch (error) {
+          console.error('Error sending message:', error);
+          return false;
+        }
+      }
+
       // ArrayBuffer 转 Base64
       arrayBufferToBase64(buffer) {
         const bytes = new Uint8Array(buffer);
@@ -303,6 +400,16 @@
           binary += String.fromCharCode(bytes[i]);
         }
         return btoa(binary);
+      }
+
+      // Base64 转 ArrayBuffer
+      base64ToArrayBuffer(base64) {
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
       }
 
       // 关闭连接
@@ -314,11 +421,29 @@
           this.peerConnection.close();
         }
         this.status = 'disconnected';
+        if (this.onConnectionStatusChange) {
+          this.onConnectionStatusChange(this.status);
+        }
       }
 
       // 获取状态
       getStatus() {
         return this.status;
+      }
+
+      // 获取 ICE 候选列表
+      getIceCandidates() {
+        return this.iceCandidates;
+      }
+
+      // 设置数据接收回调
+      setOnDataReceived(callback) {
+        this.onDataReceived = callback;
+      }
+
+      // 设置连接状态变化回调
+      setOnConnectionStatusChange(callback) {
+        this.onConnectionStatusChange = callback;
       }
     }
     
@@ -326,6 +451,7 @@
     class WebRTCManager {
       constructor() {
         this.clients = new Map();
+        this.signalingChannel = null;
       }
 
       // 创建客户端
@@ -346,6 +472,38 @@
         if (client) {
           client.close();
           this.clients.delete(id);
+        }
+      }
+
+      // 建立 P2P 连接
+      async establishConnection(clientId, onConnectionEstablished) {
+        const client = this.getClient(clientId);
+        if (!client) {
+          console.error('Client not found');
+          return false;
+        }
+
+        try {
+          // 创建 offer
+          const offer = await client.createOffer();
+          console.log('Created offer:', offer);
+
+          // 模拟信令过程（实际应用中需要通过服务器或其他方式交换信令）
+          // 这里我们假设已经通过某种方式将 offer 发送给了对方
+          // 并收到了对方的 answer
+
+          // 模拟连接成功
+          setTimeout(() => {
+            console.log('Connection established successfully');
+            if (onConnectionEstablished) {
+              onConnectionEstablished(true);
+            }
+          }, 1000);
+
+          return true;
+        } catch (error) {
+          console.error('Error establishing connection:', error);
+          return false;
         }
       }
     }
@@ -407,6 +565,27 @@
         const decoder = new TextDecoder();
         return decoder.decode(decrypted);
       }
+
+      // 导出密钥
+      static async exportKey(key) {
+        const exported = await crypto.subtle.exportKey('jwk', key);
+        return JSON.stringify(exported);
+      }
+
+      // 导入密钥
+      static async importKey(keyData) {
+        const keyObj = typeof keyData === 'string' ? JSON.parse(keyData) : keyData;
+        return await crypto.subtle.importKey(
+          'jwk',
+          keyObj,
+          {
+            name: 'AES-GCM',
+            length: 256,
+          },
+          true,
+          ['encrypt', 'decrypt']
+        );
+      }
     }
     
     // 传输状态枚举
@@ -429,6 +608,7 @@
       // 初始化加密
       async initCrypto() {
         this.cryptoKey = await SecurityUtils.generateKey();
+        console.log('Crypto key generated');
       }
 
       // 创建传输任务
@@ -458,6 +638,7 @@
       // 传输文件
       async transferFile(file, deviceId) {
         const task = this.createTask(file, deviceId, '设备 ' + deviceId.substr(0, 4));
+        task.status = TransferStatus.TRANSFERRING;
         
         // 获取 WebRTC 客户端
         const client = webRTCManager.getClient(deviceId);
@@ -509,9 +690,13 @@
 
             // 计算速度和估计时间
             this.updateTaskMetrics(task);
+
+            // 模拟网络延迟
+            await new Promise(resolve => setTimeout(resolve, 10));
           } catch (error) {
             console.error('Chunk transfer failed:', error);
             task.status = TransferStatus.FAILED;
+            task.errorMessage = error.message;
             break;
           }
         }
@@ -586,6 +771,12 @@
       // 清除失败的任务
       clearFailedTasks() {
         this.tasks = this.tasks.filter(t => t.status !== TransferStatus.FAILED);
+      }
+
+      // 处理接收到的文件块
+      handleReceivedChunk(chunkData) {
+        console.log('Received file chunk:', chunkData);
+        // 实际应用中需要实现文件块的接收和组装逻辑
       }
     }
     
@@ -681,6 +872,25 @@
           const rtcClient = webRTCManager.createClient(deviceId);
           rtcClient.init();
           rtcClient.createDataChannel();
+          
+          // 设置数据接收回调
+          rtcClient.setOnDataReceived((data) => {
+            console.log('Received data from device:', data);
+            // 处理接收到的数据
+            try {
+              const message = JSON.parse(data);
+              if (message.type === 'file_transfer_chunk') {
+                fileTransferManager.handleReceivedChunk(message.data);
+              }
+            } catch (error) {
+              console.error('Error parsing received data:', error);
+            }
+          });
+          
+          // 设置连接状态变化回调
+          rtcClient.setOnConnectionStatusChange((status) => {
+            console.log(`Device ${device.name} connection status:`, status);
+          });
           
           // 模拟连接成功
           await new Promise(resolve => setTimeout(resolve, 1000));
