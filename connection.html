@@ -77,73 +77,92 @@
         color: #1677FF;
       }
       
-      .connection-methods {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
+      /* 网络连接状态 */
+      .network-status {
         margin-bottom: 30px;
-      }
-      
-      .method-card {
+        padding: 15px;
         background-color: #f9f9f9;
-        padding: 20px;
         border-radius: 8px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        border: 2px solid transparent;
       }
       
-      .method-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-        border-color: #1677FF;
-      }
-      
-      .method-card .icon {
-        font-size: 48px;
-        margin-bottom: 15px;
-      }
-      
-      .method-card h3 {
-        font-size: 16px;
-        font-weight: bold;
+      .network-status h3 {
         margin-bottom: 10px;
       }
       
-      .method-card p {
-        font-size: 14px;
-        color: #666;
+      .network-info p {
+        margin: 5px 0;
       }
       
-      .qr-code-section {
-        text-align: center;
-        margin-bottom: 30px;
+      .text-green-500 {
+        color: #52c41a;
       }
       
-      .qr-code {
-        display: inline-block;
-        padding: 20px;
-        background-color: #fff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
+      .text-red-500 {
+        color: #ff4d4f;
+      }
+      
+      /* 设备列表 */
+      .devices-section {
+        margin-top: 30px;
+      }
+      
+      .devices-section h3 {
         margin-bottom: 20px;
       }
       
-      .pairing-code-section {
-        text-align: center;
-        margin-bottom: 30px;
+      .search-status {
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #f0f8ff;
+        border-radius: 4px;
+        font-size: 14px;
       }
       
-      .pairing-code {
-        font-size: 36px;
-        font-weight: bold;
-        letter-spacing: 4px;
-        margin: 20px 0;
-        padding: 10px;
+      .device-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .device-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
         background-color: #f9f9f9;
         border-radius: 8px;
-        display: inline-block;
+        transition: all 0.3s;
+      }
+      
+      .device-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+      
+      .device-info {
+        flex: 1;
+      }
+      
+      .device-info h4 {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      
+      .device-info p {
+        font-size: 14px;
+        color: #666;
+        margin: 3px 0;
+      }
+      
+      .device-info .device-ip {
+        font-family: monospace;
+      }
+      
+      .device-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
       }
       
       .btn {
@@ -155,7 +174,6 @@
         cursor: pointer;
         font-size: 14px;
         transition: all 0.3s;
-        margin: 0 5px;
       }
       
       .btn:hover {
@@ -174,31 +192,84 @@
         border-color: #409EFF;
       }
       
-      .devices-list {
-        margin-top: 20px;
+      .btn-success {
+        background-color: #52c41a;
+        color: #fff;
+        border-color: #52c41a;
       }
       
-      .device-item {
+      .btn-success:hover {
+        background-color: #73d13d;
+        border-color: #73d13d;
+      }
+      
+      /* 传输状态 */
+      .transfer-status {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+      }
+      
+      .transfer-status h3 {
+        margin-bottom: 15px;
+      }
+      
+      .transfer-item {
+        margin-bottom: 15px;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 4px;
+        border-left: 4px solid #1677FF;
+      }
+      
+      .transfer-info {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 15px;
-        background-color: #f9f9f9;
-        border-radius: 8px;
         margin-bottom: 10px;
       }
       
-      .device-info h4 {
-        font-size: 16px;
-        font-weight: bold;
-        margin-bottom: 5px;
+      .transfer-progress {
+        width: 100%;
+        height: 8px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 10px 0;
       }
       
-      .device-info p {
-        font-size: 14px;
+      .transfer-progress-bar {
+        height: 100%;
+        background-color: #1677FF;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+      
+      .transfer-details {
+        font-size: 12px;
         color: #666;
+        display: flex;
+        justify-content: space-between;
       }
       
+      /* 加载动画 */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #1677FF;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* 响应式设计 */
       @media (max-width: 768px) {
         .header {
           flex-direction: column;
@@ -206,13 +277,20 @@
           text-align: center;
         }
         
-        .connection-methods {
-          grid-template-columns: 1fr;
+        .device-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
         }
         
-        .pairing-code {
-          font-size: 24px;
-          letter-spacing: 2px;
+        .device-actions {
+          align-self: flex-end;
+        }
+        
+        .transfer-info {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 5px;
         }
       }
     </style>
@@ -229,227 +307,402 @@
       </div>
 
       <div class="section">
-        <h2>连接设备</h2>
+        <h2>LocalSend 协议连接</h2>
         
-        <div class="connection-methods">
-          <div class="method-card" onclick="showQRCode()">
-            <div class="icon">📱</div>
-            <h3>二维码连接</h3>
-            <p>扫描二维码快速连接设备</p>
-          </div>
-          <div class="method-card" onclick="showPairingCode()">
-            <div class="icon">🔢</div>
-            <h3>配对码连接</h3>
-            <p>输入6位配对码连接设备</p>
-          </div>
-          <div class="method-card" onclick="discoverDevices()">
-            <div class="icon">🔍</div>
-            <h3>局域网发现</h3>
-            <p>自动发现同一局域网内的设备</p>
-          </div>
-          <div class="method-card" onclick="shareLink()">
-            <div class="icon">🔗</div>
-            <h3>分享链接</h3>
-            <p>通过链接邀请其他设备连接</p>
+        <!-- 网络连接状态 -->
+        <div class="network-status">
+          <h3>网络状态</h3>
+          <div class="network-info" id="network-info">
+            <p><strong>网络名称:</strong> <span id="network-name">检测中...</span></p>
+            <p><strong>IP地址:</strong> <span id="ip-address">检测中...</span></p>
+            <p><strong>连接状态:</strong> <span id="connection-status" class="text-red-500">未连接</span></p>
+            <p><strong>LocalSend状态:</strong> <span id="localsend-status" class="text-red-500">未启动</span></p>
           </div>
         </div>
 
-        <!-- 二维码连接部分 -->
-        <div id="qr-code-section" class="qr-code-section">
-          <h3>二维码连接</h3>
-          <div class="qr-code">
-            <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-              <rect width="200" height="200" fill="white" stroke="black" stroke-width="2"/>
-              <rect x="20" y="20" width="60" height="60" fill="black"/>
-              <rect x="120" y="20" width="60" height="60" fill="black"/>
-              <rect x="20" y="120" width="60" height="60" fill="black"/>
-              <rect x="120" y="120" width="60" height="60" fill="black"/>
-              <rect x="60" y="60" width="80" height="80" fill="black"/>
-              <rect x="80" y="80" width="40" height="40" fill="white"/>
-            </svg>
+        <!-- 设备列表 -->
+        <div class="devices-section">
+          <h3>在线设备</h3>
+          <div class="search-status" id="search-status">
+            <span id="search-status-text">正在搜索设备...</span>
+            <span id="search-loading" class="loading" style="margin-left: 10px;"></span>
           </div>
-          <p>请使用飞传App扫描上方二维码</p>
-          <button class="btn" onclick="refreshQRCode()">
-            刷新二维码
+          <div class="device-list" id="device-list">
+            <!-- 设备列表将通过JavaScript动态生成 -->
+          </div>
+          <button class="btn" onclick="refreshDevices()" style="margin-top: 20px;">
+            刷新设备列表
           </button>
         </div>
 
-        <!-- 配对码连接部分 -->
-        <div id="pairing-code-section" class="pairing-code-section" style="display: none;">
-          <h3>配对码连接</h3>
-          <div class="pairing-code" id="pairing-code">
-            ABC123
+        <!-- 传输状态 -->
+        <div class="transfer-status">
+          <h3>传输状态</h3>
+          <div id="transfer-list">
+            <!-- 传输列表将通过JavaScript动态生成 -->
           </div>
-          <p>请在另一台设备上输入上方配对码</p>
-          <button class="btn" onclick="refreshPairingCode()">
-            刷新配对码
-          </button>
-        </div>
-
-        <!-- 局域网设备列表 -->
-        <div id="devices-section" class="devices-list" style="display: none;">
-          <h3>局域网设备</h3>
-          <div class="device-item">
-            <div class="device-info">
-              <h4>笔记本电脑</h4>
-              <p>Windows 10 | 192.168.1.100</p>
-            </div>
-            <button class="btn btn-primary" onclick="connectToDevice('device_1')">
-              连接
-            </button>
-          </div>
-          <div class="device-item">
-            <div class="device-info">
-              <h4>手机</h4>
-              <p>Android 13 | 192.168.1.101</p>
-            </div>
-            <button class="btn btn-primary" onclick="connectToDevice('device_2')">
-              连接
-            </button>
-          </div>
-          <button class="btn" onclick="discoverDevices()" style="margin-top: 20px;">
-            重新扫描设备
-          </button>
         </div>
       </div>
     </div>
 
     <script>
+      // 全局变量
+      let udpSocket = null;
+      let devices = [];
+      let transfers = [];
+      let deviceId = generateDeviceId();
+      let deviceName = navigator.userAgent.includes('Mobile') ? 'Mobile Device' : 'Desktop';
+      let serverPort = 53317;
+      
       // 返回首页
       function goBack() {
         window.location.href = 'index.html';
       }
-
-      // 显示二维码
-      function showQRCode() {
-        console.log('显示二维码连接');
-        const qrSection = document.getElementById('qr-code-section');
-        const pairingSection = document.getElementById('pairing-code-section');
-        const devicesSection = document.getElementById('devices-section');
-        
-        if (qrSection && pairingSection && devicesSection) {
-          qrSection.style.display = 'block';
-          pairingSection.style.display = 'none';
-          devicesSection.style.display = 'none';
-        }
-      }
-
-      // 显示配对码
-      function showPairingCode() {
-        console.log('显示配对码连接');
-        const qrSection = document.getElementById('qr-code-section');
-        const pairingSection = document.getElementById('pairing-code-section');
-        const devicesSection = document.getElementById('devices-section');
-        
-        if (qrSection && pairingSection && devicesSection) {
-          qrSection.style.display = 'none';
-          pairingSection.style.display = 'block';
-          devicesSection.style.display = 'none';
-        }
-      }
-
-      // 发现局域网设备
-      function discoverDevices() {
-        console.log('发现局域网设备');
-        const qrSection = document.getElementById('qr-code-section');
-        const pairingSection = document.getElementById('pairing-code-section');
-        const devicesSection = document.getElementById('devices-section');
-        
-        if (qrSection && pairingSection && devicesSection) {
-          qrSection.style.display = 'none';
-          pairingSection.style.display = 'none';
-          devicesSection.style.display = 'block';
-        }
-      }
-
-      // 分享链接
-      function shareLink() {
-        console.log('分享连接链接');
-        const shareUrl = window.location.origin + '/connection.html?deviceId=' + generateDeviceId();
-        if (navigator.share) {
-          navigator.share({
-            title: '飞传 - 跨设备文件互传工具',
-            text: '使用飞传连接我的设备',
-            url: shareUrl,
-          });
-        } else {
-          // 复制到剪贴板
-          navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('链接已复制到剪贴板');
-          }).catch(err => {
-            console.error('复制失败:', err);
-            alert('复制链接失败，请手动复制: ' + shareUrl);
-          });
-        }
-      }
-
-      // 刷新二维码
-      function refreshQRCode() {
-        console.log('刷新二维码');
-        // 模拟刷新二维码
-        alert('二维码已刷新');
-      }
-
-      // 刷新配对码
-      function refreshPairingCode() {
-        console.log('刷新配对码');
-        const newCode = generatePairingCode();
-        const pairingCodeElement = document.getElementById('pairing-code');
-        if (pairingCodeElement) {
-          pairingCodeElement.textContent = newCode;
-          alert('配对码已刷新');
-        }
-      }
-
-      // 连接设备
-      function connectToDevice(deviceId) {
-        console.log('连接设备:', deviceId);
-        alert('正在连接设备...');
-        // 模拟连接成功
-        setTimeout(() => {
-          alert('连接成功！');
-          // 导航到传输页面
-          window.location.href = 'transfer.html';
-        }, 1000);
-      }
-
+      
       // 生成设备ID
       function generateDeviceId() {
         return 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       }
-
-      // 生成6位配对码
-      function generatePairingCode() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let code = '';
-        for (let i = 0; i < 6; i++) {
-          code += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return code;
+      
+      // 检测网络状态
+      function detectNetworkStatus() {
+        console.log('检测网络状态');
+        
+        // 模拟网络状态
+        setTimeout(() => {
+          document.getElementById('network-name').textContent = 'Home WiFi';
+          document.getElementById('ip-address').textContent = '192.168.1.100';
+          document.getElementById('connection-status').textContent = '已连接';
+          document.getElementById('connection-status').className = 'text-green-500';
+          document.getElementById('localsend-status').textContent = '已启动';
+          document.getElementById('localsend-status').className = 'text-green-500';
+        }, 1000);
       }
-
+      
+      // 初始化UDP套接字用于设备发现
+      function initUDPSocket() {
+        console.log('初始化UDP套接字');
+        
+        // 模拟UDP套接字初始化
+        setTimeout(() => {
+          console.log('UDP套接字初始化完成');
+          startDeviceDiscovery();
+        }, 500);
+      }
+      
+      // 开始设备发现
+      function startDeviceDiscovery() {
+        console.log('开始设备发现');
+        
+        // 模拟设备发现过程
+        setTimeout(() => {
+          // 模拟发现的设备
+          devices = [
+            {
+              id: 'device_1',
+              name: '笔记本电脑',
+              ip: '192.168.1.101',
+              port: 53317,
+              os: 'Windows 10',
+              version: '1.0.0',
+              lastSeen: new Date(),
+              status: 'online'
+            },
+            {
+              id: 'device_2',
+              name: '手机',
+              ip: '192.168.1.102',
+              port: 53317,
+              os: 'Android 13',
+              version: '1.0.0',
+              lastSeen: new Date(),
+              status: 'online'
+            },
+            {
+              id: 'device_3',
+              name: '平板',
+              ip: '192.168.1.103',
+              port: 53317,
+              os: 'iPadOS 17',
+              version: '1.0.0',
+              lastSeen: new Date(),
+              status: 'online'
+            }
+          ];
+          
+          updateDeviceList();
+          document.getElementById('search-status-text').textContent = `搜索完成，发现 ${devices.length} 台设备`;
+          document.getElementById('search-loading').style.display = 'none';
+        }, 2000);
+      }
+      
+      // 更新设备列表
+      function updateDeviceList() {
+        console.log('更新设备列表');
+        const deviceList = document.getElementById('device-list');
+        deviceList.innerHTML = '';
+        
+        devices.forEach(device => {
+          const deviceItem = document.createElement('div');
+          deviceItem.className = 'device-item';
+          deviceItem.innerHTML = `
+            <div class="device-info">
+              <h4>${device.name}</h4>
+              <p class="device-ip">IP: ${device.ip}:${device.port}</p>
+              <p>系统: ${device.os} | LocalSend v${device.version}</p>
+              <p>状态: <span class="text-green-500">在线</span></p>
+            </div>
+            <div class="device-actions">
+              <button class="btn" onclick="viewDeviceDetails('${device.id}')">
+                详情
+              </button>
+              <button class="btn btn-primary" onclick="sendFileToDevice('${device.id}')">
+                发送文件
+              </button>
+              <button class="btn btn-success" onclick="connectToDevice('${device.id}')">
+                连接
+              </button>
+            </div>
+          `;
+          deviceList.appendChild(deviceItem);
+        });
+      }
+      
+      // 刷新设备列表
+      function refreshDevices() {
+        console.log('刷新设备列表');
+        document.getElementById('search-status-text').textContent = '正在搜索设备...';
+        document.getElementById('search-loading').style.display = 'inline-block';
+        startDeviceDiscovery();
+      }
+      
+      // 查看设备详情
+      function viewDeviceDetails(deviceId) {
+        console.log('查看设备详情:', deviceId);
+        const device = devices.find(d => d.id === deviceId);
+        if (device) {
+          alert(`设备详情:\n名称: ${device.name}\nIP: ${device.ip}:${device.port}\n系统: ${device.os}\n版本: ${device.version}\n状态: ${device.status}`);
+        }
+      }
+      
+      // 发送文件到设备
+      function sendFileToDevice(deviceId) {
+        console.log('发送文件到设备:', deviceId);
+        
+        // 打开文件选择对话框
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+        input.onchange = (e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+              startFileTransfer(deviceId, file);
+            });
+          }
+        };
+        input.click();
+      }
+      
+      // 开始文件传输
+      function startFileTransfer(deviceId, file) {
+        console.log('开始文件传输:', deviceId, file.name);
+        
+        const device = devices.find(d => d.id === deviceId);
+        if (!device) return;
+        
+        // 创建传输任务
+        const transferId = 'transfer_' + Date.now();
+        const transfer = {
+          id: transferId,
+          deviceId: deviceId,
+          deviceName: device.name,
+          fileName: file.name,
+          fileSize: file.size,
+          progress: 0,
+          speed: 0,
+          status: 'pending', // pending, transferring, completed, failed
+          startTime: new Date(),
+          file: file
+        };
+        
+        transfers.push(transfer);
+        updateTransferList();
+        
+        // 模拟文件传输
+        simulateFileTransfer(transferId);
+      }
+      
+      // 模拟文件传输
+      function simulateFileTransfer(transferId) {
+        const transfer = transfers.find(t => t.id === transferId);
+        if (!transfer) return;
+        
+        transfer.status = 'transferring';
+        updateTransferList();
+        
+        let progress = 0;
+        const startTime = Date.now();
+        
+        const interval = setInterval(() => {
+          progress += Math.random() * 10;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            transfer.status = 'completed';
+            transfer.progress = 100;
+            updateTransferList();
+            return;
+          }
+          
+          transfer.progress = progress;
+          const elapsedTime = (Date.now() - startTime) / 1000;
+          const transferredSize = (progress / 100) * transfer.fileSize;
+          transfer.speed = transferredSize / elapsedTime;
+          updateTransferList();
+        }, 500);
+      }
+      
+      // 更新传输列表
+      function updateTransferList() {
+        console.log('更新传输列表');
+        const transferList = document.getElementById('transfer-list');
+        transferList.innerHTML = '';
+        
+        if (transfers.length === 0) {
+          transferList.innerHTML = '<p>暂无传输任务</p>';
+          return;
+        }
+        
+        transfers.forEach(transfer => {
+          const transferItem = document.createElement('div');
+          transferItem.className = 'transfer-item';
+          
+          let statusColor = '#1677FF';
+          let statusText = '传输中';
+          if (transfer.status === 'completed') {
+            statusColor = '#52c41a';
+            statusText = '已完成';
+          } else if (transfer.status === 'failed') {
+            statusColor = '#ff4d4f';
+            statusText = '失败';
+          } else if (transfer.status === 'pending') {
+            statusColor = '#faad14';
+            statusText = '等待中';
+          }
+          
+          transferItem.style.borderLeftColor = statusColor;
+          
+          const speedText = transfer.speed > 0 ? formatFileSize(transfer.speed) + '/s' : '0 B/s';
+          
+          transferItem.innerHTML = `
+            <div class="transfer-info">
+              <div>
+                <strong>${transfer.fileName}</strong>
+                <span style="margin-left: 10px; font-size: 12px; color: #666;">→ ${transfer.deviceName}</span>
+              </div>
+              <div style="font-size: 12px; color: #666;">
+                ${statusText}
+              </div>
+            </div>
+            <div class="transfer-progress">
+              <div class="transfer-progress-bar" style="width: ${transfer.progress}%; background-color: ${statusColor};"></div>
+            </div>
+            <div class="transfer-details">
+              <span>${formatFileSize(transfer.fileSize)}</span>
+              <span>${transfer.progress.toFixed(1)}%</span>
+              <span>${speedText}</span>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+              ${transfer.status === 'transferring' ? `
+                <button class="btn" onclick="pauseTransfer('${transfer.id}')" style="font-size: 12px; padding: 5px 10px;">
+                  暂停
+                </button>
+                <button class="btn" onclick="cancelTransfer('${transfer.id}')" style="font-size: 12px; padding: 5px 10px;">
+                  取消
+                </button>
+              ` : ''}
+              ${transfer.status === 'failed' ? `
+                <button class="btn" onclick="retryTransfer('${transfer.id}')" style="font-size: 12px; padding: 5px 10px;">
+                  重试
+                </button>
+              ` : ''}
+              <button class="btn" onclick="removeTransfer('${transfer.id}')" style="font-size: 12px; padding: 5px 10px;">
+                移除
+              </button>
+            </div>
+          `;
+          transferList.appendChild(transferItem);
+        });
+      }
+      
+      // 暂停传输
+      function pauseTransfer(transferId) {
+        console.log('暂停传输:', transferId);
+        const transfer = transfers.find(t => t.id === transferId);
+        if (transfer) {
+          transfer.status = 'pending';
+          updateTransferList();
+        }
+      }
+      
+      // 取消传输
+      function cancelTransfer(transferId) {
+        console.log('取消传输:', transferId);
+        const transfer = transfers.find(t => t.id === transferId);
+        if (transfer) {
+          transfer.status = 'failed';
+          updateTransferList();
+        }
+      }
+      
+      // 重试传输
+      function retryTransfer(transferId) {
+        console.log('重试传输:', transferId);
+        simulateFileTransfer(transferId);
+      }
+      
+      // 移除传输
+      function removeTransfer(transferId) {
+        console.log('移除传输:', transferId);
+        transfers = transfers.filter(t => t.id !== transferId);
+        updateTransferList();
+      }
+      
+      // 连接设备
+      function connectToDevice(deviceId) {
+        console.log('连接设备:', deviceId);
+        const device = devices.find(d => d.id === deviceId);
+        if (device) {
+          alert(`正在连接到 ${device.name} (${device.ip}:${device.port})...`);
+          setTimeout(() => {
+            alert(`连接成功！已与 ${device.name} 建立LocalSend连接`);
+            window.location.href = 'transfer.html';
+          }, 1000);
+        }
+      }
+      
+      // 格式化文件大小
+      function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+        if (bytes < 1073741824) return (bytes / 1048576).toFixed(2) + ' MB';
+        return (bytes / 1073741824).toFixed(2) + ' GB';
+      }
+      
       // 初始化页面
       function init() {
-        console.log('初始化连接页面');
-        // 默认显示二维码连接
-        showQRCode();
+        console.log('初始化LocalSend连接页面');
+        // 检测网络状态
+        detectNetworkStatus();
+        // 初始化UDP套接字
+        initUDPSocket();
+        // 初始化传输列表
+        updateTransferList();
       }
-
-      // 页面加载完成后初始化
+      
+      // 页面加载后初始化
       window.onload = init;
-      
-      // 测试所有连接功能
-      function testConnectionFunctions() {
-        console.log('测试连接功能');
-        console.log('showQRCode:', typeof showQRCode === 'function');
-        console.log('showPairingCode:', typeof showPairingCode === 'function');
-        console.log('discoverDevices:', typeof discoverDevices === 'function');
-        console.log('shareLink:', typeof shareLink === 'function');
-        console.log('connectToDevice:', typeof connectToDevice === 'function');
-      }
-      
-      // 页面加载后测试功能
-      window.addEventListener('load', testConnectionFunctions);
     </script>
   </body>
 </html>
