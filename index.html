@@ -2,12 +2,210 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>飞传 - 跨设备文件互传工具</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+        min-height: 100vh;
+      }
+      
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 40px;
+      }
+      
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1677FF;
+      }
+      
+      .logo span {
+        font-size: 14px;
+        color: #666;
+        margin-left: 10px;
+      }
+      
+      .buttons {
+        display: flex;
+        gap: 10px;
+      }
+      
+      .btn {
+        padding: 8px 16px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        background-color: #fff;
+        color: #333;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s;
+      }
+      
+      .btn:hover {
+        border-color: #1677FF;
+        color: #1677FF;
+      }
+      
+      .btn-primary {
+        background-color: #1677FF;
+        color: #fff;
+        border-color: #1677FF;
+      }
+      
+      .btn-primary:hover {
+        background-color: #409EFF;
+        border-color: #409EFF;
+      }
+      
+      .hero {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+      
+      .hero h1 {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #1677FF;
+      }
+      
+      .hero p {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 40px;
+      }
+      
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+      }
+      
+      .feature-card {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+      }
+      
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      }
+      
+      .feature-card h3 {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #1677FF;
+      }
+      
+      .feature-card p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+      }
+      
+      .footer {
+        text-align: center;
+        padding: 40px 0;
+        border-top: 1px solid #e0e0e0;
+        color: #666;
+        font-size: 14px;
+      }
+      
+      @media (max-width: 768px) {
+        .header {
+          flex-direction: column;
+          gap: 20px;
+          text-align: center;
+        }
+        
+        .hero h1 {
+          font-size: 28px;
+        }
+        
+        .hero p {
+          font-size: 16px;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="container">
+      <div class="header">
+        <div class="logo">
+          飞传 <span>(FileFly)</span>
+        </div>
+        <div class="buttons">
+          <a href="https://github.com/filefly-app/filefly" target="_blank" class="btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 5px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+            GitHub
+          </a>
+          <button class="btn btn-primary">
+            立即开始
+          </button>
+        </div>
+      </div>
+
+      <div class="hero">
+        <h1>飞传 - 跨设备文件互传工具</h1>
+        <p>快速、安全、跨平台的文件传输解决方案</p>
+      </div>
+
+      <div class="features">
+        <div class="feature-card">
+          <h3>多连接方式</h3>
+          <p>支持二维码、配对码、局域网发现等多种连接方式，轻松连接不同设备。</p>
+        </div>
+        <div class="feature-card">
+          <h3>高速传输</h3>
+          <p>局域网P2P直传，无需服务器中转，传输速度快，适合大文件传输。</p>
+        </div>
+        <div class="feature-card">
+          <h3>安全加密</h3>
+          <p>端到端加密技术，确保文件传输过程中的安全性，保护您的隐私。</p>
+        </div>
+        <div class="feature-card">
+          <h3>多设备支持</h3>
+          <p>支持手机、电脑、平板等多种设备，随时随地传输文件。</p>
+        </div>
+        <div class="feature-card">
+          <h3>文件管理</h3>
+          <p>实时显示传输进度和速度，支持暂停、恢复、取消等操作。</p>
+        </div>
+        <div class="feature-card">
+          <h3>文本传输</h3>
+          <p>不仅支持文件传输，还支持文本和代码片段的快速传输。</p>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>&copy; 2026 飞传 (FileFly). 保留所有权利。</p>
+      </div>
+    </div>
   </body>
 </html>

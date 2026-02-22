@@ -7,7 +7,7 @@ import TextTransferPage from './pages/TextTransferPage'
 import HistoryPage from './pages/HistoryPage'
 import SettingsPage from './pages/SettingsPage'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 function App() {
   const [darkMode, setDarkMode] = useState(false)
