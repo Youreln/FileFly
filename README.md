@@ -18,44 +18,42 @@ FileFly 是一款纯前端的跨设备文件互传工具，支持在局域网内
 
 ### ✨ 核心特性
 
-- **多连接方式**：二维码、配对码、局域网发现、链接分享
-- **高速传输**：局域网 P2P 直传，速度快，无服务器中转
-- **安全加密**：端到端加密技术，保护文件传输安全
+- **纯前端实现**：无需后端服务器，直接打开 HTML 文件即可使用
+- **高速传输**：使用 WebRTC DataChannel 实现局域网 P2P 直传，速度快
+- **安全加密**：使用 AES-GCM 256 位端到端加密技术，保护文件传输安全
 - **多设备支持**：手机、电脑、平板全平台支持
-- **文件管理**：实时传输进度、速度显示，支持暂停/恢复/取消
-- **文本传输**：支持文本和代码片段快速传输
+- **文件管理**：实时传输进度、速度显示，支持取消传输
+- **文件分块**：64KB 分块传输，支持大文件
 - **响应式设计**：适配各种屏幕尺寸
 - **深色模式**：支持系统深色模式偏好
 
 ## 🚀 快速开始
 
-### 方法一：直接访问
+### 方法：直接打开 HTML 文件
 
-1. 打开浏览器访问 [FileFly](http://127.0.0.1:3000)
-2. 点击 "立即开始" 按钮
-3. 选择连接方式连接设备
-4. 开始传输文件
-
-### 方法二：本地运行
-
-1. **克隆项目**
+1. **下载或克隆项目**
    ```bash
    git clone https://github.com/Youreln/filefly.git
    cd filefly
    ```
 
-2. **安装依赖**
-   ```bash
-   npm install
-   ```
+2. **打开应用**
+   - 在文件管理器中找到 `index.html` 文件
+   - 直接双击打开它，或右键选择 "打开方式" → 选择浏览器
+   - 应用会在浏览器中加载，无需任何服务器
 
-3. **启动开发服务器**
-   ```bash
-   npm run dev
-   ```
+3. **开始使用**
+   - 应用加载完成后，会自动扫描局域网设备
+   - 选择要连接的设备，点击 "连接" 按钮
+   - 连接成功后，点击 "发送文件" 按钮选择要传输的文件
+   - 观察传输进度和速度，等待传输完成
 
-4. **访问应用**
-   打开浏览器访问 `http://localhost:5173`
+### 注意事项
+
+- **浏览器支持**：建议使用 Chrome、Firefox、Safari、Edge 等现代浏览器
+- **局域网连接**：确保设备在同一局域网内（同一 WiFi 或有线网络）
+- **权限要求**：某些浏览器可能需要权限才能访问网络和文件
+- **防火墙设置**：如果无法发现设备，请检查防火墙设置，确保 WebRTC 流量被允许
 
 ## 📱 使用指南
 
@@ -133,16 +131,15 @@ FileFly 提供多种连接方式，您可以选择最适合您的方式：
 
 ## 🛠️ 技术栈
 
-| 类别 | 技术 | 版本 |
-| :--- | :--- | :--- |
-| 前端框架 | React | ^18.2.0 |
-| 开发语言 | TypeScript | ^5.2.2 |
-| 构建工具 | Vite | ^4.5.0 |
-| UI 组件 | Ant Design Mobile | ^5.34.0 |
-| 样式 | Tailwind CSS | ^3.4.1 |
-| 状态管理 | Zustand | ^4.5.0 |
-| 二维码 | qrcode.react | ^3.1.0 |
-| 实时通信 | Socket.io Client | ^4.7.4 |
+| 类别 | 技术 |
+| :--- | :--- |
+| 前端框架 | React (CDN) |
+| 状态管理 | Zustand (CDN) |
+| UI 组件 | Ant Design Mobile (CDN) |
+| 样式 | Tailwind CSS (CDN) |
+| 实时通信 | WebRTC DataChannel |
+| 加密技术 | Web Crypto API (AES-GCM 256) |
+| 文件处理 | File API + Stream API |
 
 ## 🎨 界面设计
 
@@ -186,32 +183,21 @@ FileFly 针对文件传输进行了多项性能优化：
 FileFly/
 ├── public/              # 静态资源
 │   └── favicon.svg      # 项目图标
-├── src/                 # 源代码
-│   ├── components/      # 可复用组件
-│   │   ├── FilePreview.tsx        # 文件预览组件
-│   │   ├── HotspotList.tsx        # 热点列表组件
-│   │   └── NetworkSpeedTest.tsx   # 网络测速组件
-│   ├── pages/           # 页面组件
-│   │   ├── ConnectionPage.tsx      # 连接页面
-│   │   ├── TransferPage.tsx        # 文件传输页面
-│   │   ├── TextTransferPage.tsx    # 文本传输页面
-│   │   ├── HistoryPage.tsx         # 传输历史页面
-│   │   └── SettingsPage.tsx        # 设置页面
-│   ├── store/           # 状态管理
-│   │   ├── useConnectionStore.ts   # 连接状态管理
-│   │   ├── useFileTransferStore.ts # 文件传输状态管理
-│   │   └── useTextTransferStore.ts # 文本传输状态管理
-│   ├── utils/           # 工具函数
-│   │   └── security.ts             # 加密相关工具
-│   ├── App.tsx          # 应用根组件
-│   ├── main.tsx         # 应用入口
-│   └── index.css        # 全局样式
-├── index.html           # HTML 模板
-├── package.json         # 项目配置
-├── vite.config.ts       # Vite 配置
-├── tsconfig.json        # TypeScript 配置
+├── index.html           # 主应用文件（包含所有代码）
+├── LICENSE              # 许可证文件
 └── README.md            # 项目说明
 ```
+
+### 核心文件说明
+
+- **index.html**：完整的应用代码，包含所有功能实现
+  - 集成了 React、Zustand、Ant Design Mobile、Tailwind CSS
+  - 实现了 WebRTC DataChannel 连接管理
+  - 实现了文件分块传输和加密
+  - 实现了设备发现和连接管理
+  - 包含完整的用户界面
+
+- **public/favicon.svg**：应用图标，显示在浏览器标签页
 
 ## 🤝 贡献指南
 
@@ -241,16 +227,16 @@ FileFly 采用 MIT 许可证，详见 [LICENSE](LICENSE) 文件。
 
 ## 🙏 致谢
 
-感谢以下开源项目的支持：
+感谢以下开源项目和技术的支持：
 
-- [React](https://reactjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Vite](https://vitejs.dev/)
-- [Ant Design Mobile](https://ant.design/mobile)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Zustand](https://github.com/pmndrs/zustand)
-- [Socket.io](https://socket.io/)
-- [qrcode.react](https://github.com/zpao/qrcode.react)
+- [React](https://reactjs.org/) - 前端UI库
+- [Zustand](https://github.com/pmndrs/zustand) - 轻量级状态管理
+- [Ant Design Mobile](https://ant.design/mobile) - 移动端UI组件库
+- [Tailwind CSS](https://tailwindcss.com/) - 实用优先的CSS框架
+- [WebRTC](https://webrtc.org/) - 实时通信技术
+- [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) - 浏览器加密API
+- [File API](https://developer.mozilla.org/en-US/docs/Web/API/File_API) - 文件操作API
+- [Stream API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API) - 流处理API
 
 ---
 
