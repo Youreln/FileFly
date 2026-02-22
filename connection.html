@@ -275,7 +275,7 @@
         </div>
 
         <!-- 配对码连接部分 -->
-        <div id="pairing-code-section" class="pairing-code-section">
+        <div id="pairing-code-section" class="pairing-code-section" style="display: none;">
           <h3>配对码连接</h3>
           <div class="pairing-code" id="pairing-code">
             ABC123
@@ -287,7 +287,7 @@
         </div>
 
         <!-- 局域网设备列表 -->
-        <div id="devices-section" class="devices-list">
+        <div id="devices-section" class="devices-list" style="display: none;">
           <h3>局域网设备</h3>
           <div class="device-item">
             <div class="device-info">
@@ -322,27 +322,49 @@
 
       // 显示二维码
       function showQRCode() {
-        document.getElementById('qr-code-section').style.display = 'block';
-        document.getElementById('pairing-code-section').style.display = 'none';
-        document.getElementById('devices-section').style.display = 'none';
+        console.log('显示二维码连接');
+        const qrSection = document.getElementById('qr-code-section');
+        const pairingSection = document.getElementById('pairing-code-section');
+        const devicesSection = document.getElementById('devices-section');
+        
+        if (qrSection && pairingSection && devicesSection) {
+          qrSection.style.display = 'block';
+          pairingSection.style.display = 'none';
+          devicesSection.style.display = 'none';
+        }
       }
 
       // 显示配对码
       function showPairingCode() {
-        document.getElementById('qr-code-section').style.display = 'none';
-        document.getElementById('pairing-code-section').style.display = 'block';
-        document.getElementById('devices-section').style.display = 'none';
+        console.log('显示配对码连接');
+        const qrSection = document.getElementById('qr-code-section');
+        const pairingSection = document.getElementById('pairing-code-section');
+        const devicesSection = document.getElementById('devices-section');
+        
+        if (qrSection && pairingSection && devicesSection) {
+          qrSection.style.display = 'none';
+          pairingSection.style.display = 'block';
+          devicesSection.style.display = 'none';
+        }
       }
 
       // 发现局域网设备
       function discoverDevices() {
-        document.getElementById('qr-code-section').style.display = 'none';
-        document.getElementById('pairing-code-section').style.display = 'none';
-        document.getElementById('devices-section').style.display = 'block';
+        console.log('发现局域网设备');
+        const qrSection = document.getElementById('qr-code-section');
+        const pairingSection = document.getElementById('pairing-code-section');
+        const devicesSection = document.getElementById('devices-section');
+        
+        if (qrSection && pairingSection && devicesSection) {
+          qrSection.style.display = 'none';
+          pairingSection.style.display = 'none';
+          devicesSection.style.display = 'block';
+        }
       }
 
       // 分享链接
       function shareLink() {
+        console.log('分享连接链接');
         const shareUrl = window.location.origin + '/connection.html?deviceId=' + generateDeviceId();
         if (navigator.share) {
           navigator.share({
@@ -354,24 +376,34 @@
           // 复制到剪贴板
           navigator.clipboard.writeText(shareUrl).then(() => {
             alert('链接已复制到剪贴板');
+          }).catch(err => {
+            console.error('复制失败:', err);
+            alert('复制链接失败，请手动复制: ' + shareUrl);
           });
         }
       }
 
       // 刷新二维码
       function refreshQRCode() {
+        console.log('刷新二维码');
+        // 模拟刷新二维码
         alert('二维码已刷新');
       }
 
       // 刷新配对码
       function refreshPairingCode() {
+        console.log('刷新配对码');
         const newCode = generatePairingCode();
-        document.getElementById('pairing-code').textContent = newCode;
-        alert('配对码已刷新');
+        const pairingCodeElement = document.getElementById('pairing-code');
+        if (pairingCodeElement) {
+          pairingCodeElement.textContent = newCode;
+          alert('配对码已刷新');
+        }
       }
 
       // 连接设备
       function connectToDevice(deviceId) {
+        console.log('连接设备:', deviceId);
         alert('正在连接设备...');
         // 模拟连接成功
         setTimeout(() => {
@@ -398,12 +430,26 @@
 
       // 初始化页面
       function init() {
+        console.log('初始化连接页面');
         // 默认显示二维码连接
         showQRCode();
       }
 
       // 页面加载完成后初始化
       window.onload = init;
+      
+      // 测试所有连接功能
+      function testConnectionFunctions() {
+        console.log('测试连接功能');
+        console.log('showQRCode:', typeof showQRCode === 'function');
+        console.log('showPairingCode:', typeof showPairingCode === 'function');
+        console.log('discoverDevices:', typeof discoverDevices === 'function');
+        console.log('shareLink:', typeof shareLink === 'function');
+        console.log('connectToDevice:', typeof connectToDevice === 'function');
+      }
+      
+      // 页面加载后测试功能
+      window.addEventListener('load', testConnectionFunctions);
     </script>
   </body>
 </html>
