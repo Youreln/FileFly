@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { Card, Button, Typography, List, Avatar, Space, Toast, Progress, Badge, Statistic, Row, Col } from 'antd-mobile'
-import { RefreshCw, Wifi, Send, Info, Check, X, Pause, Play, Server, Network, ClockCircle, Zap, CloudUpload, CheckCircle, AlertCircle, Hourglass } from 'antd-mobile-icons'
+import React, { useEffect, useState, useRef } from 'react'
+import { Card, Button, Typography, List, Avatar, Space, Toast, Progress, Badge, Statistic, Row, Col, Input, Dialog, Popup } from 'antd-mobile'
+import { RefreshCw, Wifi, Send, Info, Check, X, Pause, Play, Server, Network, ClockCircle, Zap, CloudUpload, CheckCircle, AlertCircle, Hourglass, QrCode, Key, Link, Share2, Scan } from 'antd-mobile-icons'
+import QRCode from 'qrcode.react'
 import { useConnectionStore } from '../store/useConnectionStore'
 import { useFileTransferStore, formatSize, formatSpeed } from '../store/useFileTransferStore'
 
@@ -31,6 +32,73 @@ const ConnectionPage: React.FC = () => {
 
   const [stats, setStats] = useState(getTransferStats())
   const [animateValues, setAnimateValues] = useState<{ [key: string]: number }>({})
+  
+  // 新的连接方式状态
+  const [pairingCode, setPairingCode] = useState<string>(generatePairingCode())
+  const [inputPairingCode, setInputPairingCode] = useState<string>('')
+  const [showQRCode, setShowQRCode] = useState<boolean>(false)
+  const [showPairingDialog, setShowPairingDialog] = useState<boolean>(false)
+  const [showScanDialog, setShowScanDialog] = useState<boolean>(false)
+  const [connectionMethod, setConnectionMethod] = useState<'lan' | 'qrcode' | 'pairing' | 'link'>('lan')
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  // 生成6位配对码
+  function generatePairingCode(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    let code = ''
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return code
+  }
+
+  // 刷新配对码
+  const handleRefreshPairingCode = () => {
+    setPairingCode(generatePairingCode())
+    Toast.show({ message: '配对码已刷新', position: 'top' })
+  }
+
+  // 复制配对码
+  const handleCopyPairingCode = () => {
+    navigator.clipboard.writeText(pairingCode)
+    Toast.show({ message: '配对码已复制', position: 'top' })
+  }
+
+  // 输入配对码连接
+  const handleEnterPairingCode = () => {
+    if (inputPairingCode.length === 6) {
+      Toast.show({ message: '正在连接...', position: 'top' })
+      // 模拟配对码连接
+      setTimeout(() => {
+        Toast.show({ message: '连接成功！', position: 'top' })
+        setShowPairingDialog(false)
+        setInputPairingCode('')
+      }, 1000)
+    } else {
+      Toast.show({ message: '请输入6位配对码', position: 'top' })
+    }
+  }
+
+  // 开始二维码扫描
+  const handleStartQRCodeScan = () => {
+    setShowScanDialog(true)
+    // 在实际应用中，这里应该启动摄像头进行扫描
+    Toast.show({ message: '请扫描对方的二维码', position: 'top' })
+  }
+
+  // 生成分享链接
+  const generateShareLink = (): string => {
+    const deviceId = Math.random().toString(36).substr(2, 9)
+    return `${window.location.origin}?deviceId=${deviceId}`
+  }
+
+  // 复制分享链接
+  const handleCopyShareLink = () => {
+    const shareLink = generateShareLink()
+    navigator.clipboard.writeText(shareLink)
+    Toast.show({ message: '分享链接已复制', position: 'top' })
+  }
 
   useEffect(() => {
     // 初始化时刷新设备列表
@@ -143,6 +211,124 @@ const ConnectionPage: React.FC = () => {
               <div className="p-4 rounded-lg bg-blue-50 dark:bg-gray-700/50 transition-all duration-300 hover:bg-blue-100 dark:hover:bg-gray-700 md:col-span-2">
                 <Text className="text-sm text-gray-500 dark:text-gray-400 mb-1">端口</Text>
                 <Text className="font-mono font-semibold text-gray-800 dark:text-white">{localSendStatus.port}</Text>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+
+        {/* 连接方式 */}
+        <Card className="mb-8 overflow-hidden border-0 shadow-lg backdrop-blur-lg bg-white/80 dark:bg-gray-800/80 rounded-2xl transition-all duration-300 hover:shadow-xl">
+          <Card.Header 
+            title={
+              <div className="flex items-center">
+                <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/50 mr-3">
+                  <Link className="text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <Text className="font-bold text-gray-800 dark:text-white">连接方式</Text>
+              </div>
+            } 
+          />
+          <Card.Body className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 二维码连接 */}
+              <div className="p-6 rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border border-purple-100 dark:border-purple-800/50 transition-all duration-300 hover:shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/50 mr-3">
+                    <QrCode className="text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <Text className="font-bold text-gray-800 dark:text-white">二维码连接</Text>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md mb-4">
+                    <QRCode 
+                      value={`localsend://connect?deviceId=${Math.random().toString(36).substr(2, 9)}&deviceName=${encodeURIComponent('FileFly Device')}`} 
+                      size={150} 
+                    />
+                  </div>
+                  <Text className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+                    扫描二维码即可连接
+                  </Text>
+                  <Button 
+                    size="small" 
+                    color="primary"
+                    className="rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all"
+                    onClick={handleStartQRCodeScan}
+                  >
+                    <Scan className="mr-2" />
+                    扫描二维码
+                  </Button>
+                </div>
+              </div>
+
+              {/* 配对码连接 */}
+              <div className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-teal-50 dark:from-blue-900/20 dark:to-teal-900/20 border border-blue-100 dark:border-blue-800/50 transition-all duration-300 hover:shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/50 mr-3">
+                    <Key className="text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <Text className="font-bold text-gray-800 dark:text-white">配对码连接</Text>
+                </div>
+                <div className="mb-4">
+                  <Text className="text-sm text-gray-600 dark:text-gray-400 mb-2">我的配对码</Text>
+                  <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow-sm mb-4">
+                    <Text className="text-2xl font-bold font-mono text-gray-800 dark:text-white">{pairingCode}</Text>
+                    <Space>
+                      <Button 
+                        size="small" 
+                        icon={<RefreshCw />}
+                        onClick={handleRefreshPairingCode}
+                        className="rounded-full bg-gray-100 text-gray-700 dark:bg-gray-600/50 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+                      />
+                      <Button 
+                        size="small" 
+                        onClick={handleCopyPairingCode}
+                        className="rounded-full bg-blue-100 text-blue-700 dark:bg-blue-600/50 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-600 transition-all"
+                      >
+                        复制
+                      </Button>
+                    </Space>
+                  </div>
+                  <Text className="text-sm text-gray-600 dark:text-gray-400 mb-2">输入对方配对码</Text>
+                  <div className="flex gap-3">
+                    <Input 
+                      value={inputPairingCode}
+                      onChange={setInputPairingCode}
+                      placeholder="输入6位配对码"
+                      maxLength={6}
+                      className="rounded-full"
+                    />
+                    <Button 
+                      size="small" 
+                      color="primary"
+                      onClick={handleEnterPairingCode}
+                      className="rounded-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 transition-all"
+                    >
+                      连接
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 链接分享 */}
+              <div className="p-6 rounded-xl bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-100 dark:border-green-800/50 transition-all duration-300 hover:shadow-lg md:col-span-2">
+                <div className="flex items-center mb-4">
+                  <div className="p-2 rounded-full bg-green-100 dark:bg-green-900/50 mr-3">
+                    <Share2 className="text-green-600 dark:text-green-400" />
+                  </div>
+                  <Text className="font-bold text-gray-800 dark:text-white">链接分享</Text>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+                  <Text className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-[300px]">
+                    {generateShareLink()}
+                  </Text>
+                  <Button 
+                    size="small" 
+                    onClick={handleCopyShareLink}
+                    className="rounded-full bg-green-100 text-green-700 dark:bg-green-600/50 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-600 transition-all"
+                  >
+                    复制链接
+                  </Button>
+                </div>
               </div>
             </div>
           </Card.Body>
