@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>关于 - 飞传</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary-color: #1677ff;
+      --success-color: #52c41a;
+      --warning-color: #faad14;
+      --error-color: #ff4d4f;
+      --info-color: #1677ff;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .dark {
+      background-color: #1a1a1a;
+      color: #ffffff;
+    }
+    
+    .dark .bg-white {
+      background-color: #2a2a2a;
+      color: #ffffff;
+    }
+    
+    .dark .border-gray-200 {
+      border-color: #4a4a4a;
+    }
+    
+    .dark .text-gray-800 {
+      color: #ffffff;
+    }
+    
+    .dark .text-gray-600 {
+      color: #cccccc;
+    }
+    
+    .dark .text-gray-500 {
+      color: #aaaaaa;
+    }
+    
+    .dark .bg-gray-50 {
+      background-color: #2a2a2a;
+    }
+    
+    .dark .bg-gray-100 {
+      background-color: #3a3a3a;
+    }
+    
+    .dark .bg-gray-200 {
+      background-color: #4a4a4a;
+    }
+    
+    .dark .shadow-lg {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .card {
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+<body>
+  <div class="min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-md">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <a href="index.html" class="flex-shrink-0 flex items-center">
+              <span class="text-2xl font-bold gradient-text">飞传 FileFly</span>
+            </a>
+          </div>
+          <div class="flex items-center space-x-4">
+            <a href="index.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+            <a href="connection.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">连接</a>
+            <a href="transfer.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">传输</a>
+            <a href="about.html" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium">关于</a>
+            <a href="settings.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">设置</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="flex-1 py-8">
+      <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-indigo-950 py-8 px-4">
+        <div class="container mx-auto max-w-5xl">
+          <!-- 标题部分 -->
+          <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4 gradient-text">关于飞传</h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400">快速、安全、跨平台的文件传输解决方案</p>
+          </div>
+
+          <!-- 项目简介 -->
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">项目简介</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              飞传 (FileFly) 是一款纯前端的跨设备文件互传工具，支持在局域网内快速传输文件，无需服务器中转，保护您的隐私安全。
+            </p>
+            <p class="text-gray-600 dark:text-gray-400">
+              项目采用现代前端技术栈，使用 WebRTC DataChannel 实现 P2P 直传，AES-GCM 256 位加密确保传输安全，文件分块技术支持大文件传输，实时进度显示让您随时了解传输状态。
+            </p>
+          </div>
+
+          <!-- 核心特性 -->
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">核心特性</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600">✓</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">纯前端实现</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">无需后端服务器，直接打开 HTML 文件即可使用</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600">✓</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">高速传输</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">使用 WebRTC DataChannel 实现局域网 P2P 直传，速度快</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600">✓</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">安全加密</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">使用 AES-GCM 256 位端到端加密技术，保护文件传输安全</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600">✓</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">多设备支持</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">手机、电脑、平板全平台支持</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600">✓</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">文件管理</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">实时传输进度、速度显示，支持取消传输</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600">✓</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">文件分块</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">64KB 分块传输，支持大文件</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600">✓</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">响应式设计</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">适配各种屏幕尺寸</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600">✓</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">深色模式</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">支持系统深色模式偏好</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 技术栈 -->
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">技术栈</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span class="text-gray-600">⚛️</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">React</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">前端 UI 库</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span class="text-gray-600">🟨</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">Tailwind CSS</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">实用优先的 CSS 框架</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span class="text-gray-600">🔄</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">Zustand</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">轻量级状态管理</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span class="text-gray-600">🌐</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">WebRTC</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">实时通信技术</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span class="text-gray-600">🔒</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">Web Crypto API</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">浏览器加密 API</p>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span class="text-gray-600">📁</span>
+                </div>
+                <div>
+                  <h3 class="font-bold">File API</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">文件操作 API</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 使用方法 -->
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">使用方法</h2>
+            <div class="space-y-4">
+              <div>
+                <h3 class="text-xl font-bold mb-2">1. 打开应用</h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                  在文件管理器中找到 <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">index.html</code> 文件，直接双击打开它，或右键选择 "打开方式" → 选择浏览器。
+                </p>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">2. 连接设备</h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                  应用加载完成后，点击 "设备连接" 页面，系统会自动扫描局域网内的设备。选择要连接的设备，点击 "连接" 按钮。
+                </p>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">3. 传输文件</h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                  连接成功后，点击 "发送文件" 按钮，选择要传输的文件。系统会自动开始传输，并显示实时进度和速度。
+                </p>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">4. 完成传输</h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                  传输完成后，系统会显示 "已完成" 状态。您可以在接收设备上查看传输的文件。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 隐私政策 -->
+          <div id="privacy" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-4">隐私政策</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              飞传非常重视您的隐私安全，我们采取了以下措施保护您的数据：
+            </p>
+            <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+              <li>所有文件传输均在局域网内直接进行，不经过任何服务器</li>
+              <li>使用 AES-GCM 256 位端到端加密技术保护文件内容</li>
+              <li>不会在任何设备上存储您的文件内容</li>
+              <li>连接会话临时生成，传输完成后自动断开</li>
+              <li>不收集任何个人信息或使用数据</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8 px-4">
+      <div class="container mx-auto max-w-5xl text-center">
+        <p class="text-gray-600 dark:text-gray-400 mb-4">© 2026 FileFly. 保留所有权利。</p>
+        <div class="flex justify-center gap-4">
+          <a href="index.html" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            首页
+          </a>
+          <a href="connection.html" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            设备连接
+          </a>
+          <a href="transfer.html" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            文件传输
+          </a>
+          <a href="settings.html" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            设置
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // 深色模式切换
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // 初始化深色模式
+    if (prefersDark) {
+      document.documentElement.classList.add('dark');
+      darkModeToggle.textContent = '🌞';
+    }
+    
+    // 切换深色模式
+    darkModeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      darkModeToggle.textContent = isDark ? '🌞' : '🌙';
+    });
+  </script>
+</body>
+</html>
