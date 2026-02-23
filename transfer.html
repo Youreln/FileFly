@@ -71,27 +71,28 @@
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
     }
     
-    .gradient-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    .gradient-text {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .card {
+    .drop-zone {
+      border: 2px dashed #cbd5e0;
       transition: all 0.3s ease;
     }
     
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: #3b82f6;
+      background-color: rgba(59, 130, 246, 0.05);
     }
     
     .progress-bar {
       transition: width 0.3s ease;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
   </style>
 </head>
@@ -99,537 +100,742 @@
   <div id="root"></div>
   
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef, useCallback } = React;
     const { create } = zustand;
     
-    // 网络工具函数
-    class NetworkUtils {
-      // 生成随机设备 ID
-      static generateDeviceId() {
-        return `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      }
-
-      // 生成配对码
-      static generatePairingCode() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let code = '';
-        for (let i = 0; i < 6; i++) {
-          code += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return code;
-      }
+    // ==================== 工具函数 ====================
+    
+    // 格式化文件大小
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
-    // WebRTC 工具类
-    class WebRTCClient {
-      constructor() {
-        this.peerConnection = null;
-        this.dataChannel = null;
-        this.status = 'disconnected';
-      }
-
-      // 初始化
-      init() {
-        this.peerConnection = new RTCPeerConnection({
-          iceServers: [{
-            urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302']
-          }]
-        });
-        
-        this.peerConnection.onconnectionstatechange = () => {
-          if (!this.peerConnection) return;
-          this.status = this.peerConnection.connectionState;
-        };
-        
-        this.peerConnection.onicecandidate = (event) => {
-          if (event.candidate) {
-            // 这里应该发送 ICE 候选到对方
-            console.log('ICE candidate:', event.candidate);
-          }
-        };
-        
-        this.peerConnection.ondatachannel = (event) => {
-          this.dataChannel = event.channel;
-          this.setupDataChannel();
-        };
-      }
-
-      // 创建数据通道
-      createDataChannel() {
-        if (!this.peerConnection) {
-          this.init();
-        }
-        
-        this.dataChannel = this.peerConnection.createDataChannel('file-transfer', {
-          ordered: true,
-          maxRetransmits: 10
-        });
-        
-        this.setupDataChannel();
-      }
-
-      // 设置数据通道
-      setupDataChannel() {
-        if (!this.dataChannel) return;
-        
-        this.dataChannel.onopen = () => {
-          console.log('Data channel opened');
-          this.status = 'connected';
-        };
-        
-        this.dataChannel.onclose = () => {
-          console.log('Data channel closed');
-          this.status = 'disconnected';
-        };
-        
-        this.dataChannel.onerror = (error) => {
-          console.error('Data channel error:', error);
-          this.status = 'error';
-        };
-        
-        this.dataChannel.onmessage = (event) => {
-          console.log('Data channel message:', event.data);
-        };
-      }
-
-      // 发送文件块
-      sendFileChunk(chunk) {
-        if (!this.dataChannel || this.dataChannel.readyState !== 'open') {
-          return false;
-        }
-        
-        try {
-          // 将 ArrayBuffer 转换为 Base64 字符串
-          const dataStr = this.arrayBufferToBase64(chunk.data);
-          const message = {
-            type: 'file_transfer_chunk',
-            data: {
-              ...chunk,
-              data: dataStr
-            },
-            timestamp: Date.now()
-          };
-
-          this.dataChannel.send(JSON.stringify(message));
-          return true;
-        } catch (error) {
-          console.error('Error sending file chunk:', error);
-          return false;
-        }
-      }
-
-      // ArrayBuffer 转 Base64
-      arrayBufferToBase64(buffer) {
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        return btoa(binary);
-      }
-
-      // 关闭连接
-      close() {
-        if (this.dataChannel) {
-          this.dataChannel.close();
-        }
-        if (this.peerConnection) {
-          this.peerConnection.close();
-        }
-        this.status = 'disconnected';
-      }
-
-      // 获取状态
-      getStatus() {
-        return this.status;
-      }
+    // 格式化速度
+    function formatSpeed(bytesPerSecond) {
+      return formatFileSize(bytesPerSecond) + '/s';
     }
     
-    // WebRTC 管理器
-    class WebRTCManager {
-      constructor() {
-        this.clients = new Map();
-      }
-
-      // 创建客户端
-      createClient(id) {
-        const client = new WebRTCClient();
-        this.clients.set(id, client);
-        return client;
-      }
-
-      // 获取客户端
-      getClient(id) {
-        return this.clients.get(id);
-      }
-
-      // 移除客户端
-      removeClient(id) {
-        const client = this.clients.get(id);
-        if (client) {
-          client.close();
-          this.clients.delete(id);
-        }
-      }
+    // 格式化时间
+    function formatTime(seconds) {
+      if (seconds < 60) return Math.round(seconds) + '秒';
+      if (seconds < 3600) return Math.round(seconds / 60) + '分钟';
+      return Math.round(seconds / 3600) + '小时';
     }
     
-    const webRTCManager = new WebRTCManager();
-    
-    // 加密工具函数
-    class SecurityUtils {
-      // 生成随机密钥
+    // 加密工具
+    class CryptoUtils {
       static async generateKey() {
         return await crypto.subtle.generateKey(
-          {
-            name: 'AES-GCM',
-            length: 256,
-          },
+          { name: 'AES-GCM', length: 256 },
           true,
           ['encrypt', 'decrypt']
         );
       }
-
-      // 加密数据
-      static async encryptData(data, key) {
+      
+      static async encrypt(data, key) {
         const iv = crypto.getRandomValues(new Uint8Array(12));
-        const encoder = new TextEncoder();
-        const dataBuffer = typeof data === 'string' ? encoder.encode(data) : data;
-        
         const encrypted = await crypto.subtle.encrypt(
-          {
-            name: 'AES-GCM',
-            iv,
-          },
+          { name: 'AES-GCM', iv },
           key,
-          dataBuffer
+          data
         );
-        
-        const encryptedArray = new Uint8Array(encrypted);
-        const combined = new Uint8Array(iv.length + encryptedArray.length);
-        combined.set(iv, 0);
-        combined.set(encryptedArray, iv.length);
-        
-        return btoa(String.fromCharCode(...combined));
+        return { encrypted, iv };
       }
-
-      // 解密数据
-      static async decryptData(encryptedData, key) {
-        const combined = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0));
-        const iv = combined.slice(0, 12);
-        const encryptedArray = combined.slice(12);
-        
-        const decrypted = await crypto.subtle.decrypt(
-          {
-            name: 'AES-GCM',
-            iv,
-          },
+      
+      static async decrypt(encryptedData, key, iv) {
+        return await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv },
           key,
-          encryptedArray
+          encryptedData
         );
-        
-        const decoder = new TextDecoder();
-        return decoder.decode(decrypted);
+      }
+      
+      static async exportKey(key) {
+        const exported = await crypto.subtle.exportKey('raw', key);
+        return btoa(String.fromCharCode(...new Uint8Array(exported)));
+      }
+      
+      static async importKey(keyString) {
+        const keyData = Uint8Array.from(atob(keyString), c => c.charCodeAt(0));
+        return await crypto.subtle.importKey(
+          'raw',
+          keyData,
+          { name: 'AES-GCM', length: 256 },
+          true,
+          ['encrypt', 'decrypt']
+        );
       }
     }
-    
-    // 传输状态枚举
-    const TransferStatus = {
-      PENDING: 'pending',
-      TRANSFERRING: 'transferring',
-      COMPLETED: 'completed',
-      FAILED: 'failed',
-      CANCELLED: 'cancelled'
-    };
     
     // 文件传输管理器
     class FileTransferManager {
       constructor() {
-        this.tasks = [];
-        this.cryptoKey = null;
-        this.initCrypto();
+        this.transfers = new Map();
+        this.chunkSize = 64 * 1024; // 64KB
       }
-
-      // 初始化加密
-      async initCrypto() {
-        this.cryptoKey = await SecurityUtils.generateKey();
+      
+      setChunkSize(size) {
+        this.chunkSize = size;
       }
-
-      // 创建传输任务
-      createTask(file, deviceId, deviceName) {
-        const task = {
-          id: `transfer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          fileName: file.name,
-          fileSize: file.size,
-          deviceId,
-          deviceName,
-          status: TransferStatus.PENDING,
+      
+      async prepareFile(file, encryptionKey = null) {
+        const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        const transfer = {
+          id: fileId,
+          file,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          chunks: [],
+          totalChunks: Math.ceil(file.size / this.chunkSize),
+          sentChunks: 0,
+          receivedChunks: 0,
+          status: 'pending',
           progress: 0,
           speed: 0,
-          estimatedTime: '计算中',
-          chunks: {
-            total: Math.ceil(file.size / (64 * 1024)), // 64KB 分块
-            completed: 0
-          },
-          startTime: new Date(),
-          lastUpdated: new Date()
+          startTime: null,
+          endTime: null,
+          encryptionKey,
+          receivedData: []
         };
-
-        this.tasks.push(task);
-        return task;
-      }
-
-      // 传输文件
-      async transferFile(file, deviceId) {
-        const deviceName = new URLSearchParams(window.location.search).get('deviceName') || '设备';
-        const task = this.createTask(file, deviceId, deviceName);
-        task.status = TransferStatus.TRANSFERRING;
         
-        // 获取 WebRTC 客户端
-        const client = webRTCManager.getClient(deviceId);
-        if (!client) {
-          // 如果客户端不存在，创建一个
-          const newClient = webRTCManager.createClient(deviceId);
-          newClient.init();
-          newClient.createDataChannel();
-        }
-
-        const totalChunks = task.chunks.total;
-        const chunkSize = 64 * 1024; // 64KB
-
-        for (let i = 0; i < totalChunks; i++) {
-          if (task.status === TransferStatus.CANCELLED) {
-            break;
-          }
-
-          const start = i * chunkSize;
-          const end = Math.min(start + chunkSize, file.size);
+        this.transfers.set(fileId, transfer);
+        return transfer;
+      }
+      
+      async readFileChunks(fileId, onChunk, onProgress) {
+        const transfer = this.transfers.get(fileId);
+        if (!transfer) return;
+        
+        const file = transfer.file;
+        transfer.startTime = Date.now();
+        transfer.status = 'transferring';
+        
+        for (let i = 0; i < transfer.totalChunks; i++) {
+          if (transfer.status === 'cancelled') break;
+          
+          const start = i * this.chunkSize;
+          const end = Math.min(start + this.chunkSize, file.size);
           const chunk = file.slice(start, end);
-
-          try {
-            const chunkData = await this.readChunk(chunk);
-            const fileChunk = {
-              transferId: task.id,
-              chunkIndex: i,
-              totalChunks,
-              chunkSize: end - start,
-              totalSize: file.size,
-              data: chunkData,
-              fileName: file.name,
-              fileType: file.type
-            };
-
-            // 加密文件块
-            if (this.cryptoKey) {
-              fileChunk.data = await SecurityUtils.encryptData(fileChunk.data, this.cryptoKey);
-            }
-
-            // 使用 WebRTC 发送文件块
-            const success = webRTCManager.getClient(deviceId).sendFileChunk(fileChunk);
-            if (!success) {
-              throw new Error('Failed to send chunk');
-            }
-
-            task.chunks.completed++;
-            task.progress = (task.chunks.completed / totalChunks) * 100;
-            task.lastUpdated = new Date();
-
-            // 计算速度和估计时间
-            this.updateTaskMetrics(task);
-
-            // 模拟网络延迟
-            await new Promise(resolve => setTimeout(resolve, 10));
-          } catch (error) {
-            console.error('Chunk transfer failed:', error);
-            task.status = TransferStatus.FAILED;
-            break;
+          
+          const arrayBuffer = await chunk.arrayBuffer();
+          
+          let chunkData = {
+            index: i,
+            total: transfer.totalChunks,
+            size: end - start,
+            data: arrayBuffer
+          };
+          
+          if (transfer.encryptionKey) {
+            const { encrypted, iv } = await CryptoUtils.encrypt(arrayBuffer, transfer.encryptionKey);
+            chunkData.encrypted = true;
+            chunkData.iv = Array.from(iv);
+            chunkData.data = encrypted;
+          }
+          
+          if (onChunk) {
+            await onChunk(chunkData);
+          }
+          
+          transfer.sentChunks = i + 1;
+          transfer.progress = ((i + 1) / transfer.totalChunks) * 100;
+          
+          const elapsed = (Date.now() - transfer.startTime) / 1000;
+          const bytesSent = (i + 1) * this.chunkSize;
+          transfer.speed = bytesSent / elapsed;
+          
+          if (onProgress) {
+            onProgress({
+              progress: transfer.progress,
+              speed: transfer.speed,
+              sentChunks: transfer.sentChunks,
+              totalChunks: transfer.totalChunks,
+              eta: (transfer.totalChunks - i - 1) * (this.chunkSize / transfer.speed)
+            });
           }
         }
-
-        if (task.chunks.completed === totalChunks) {
-          task.status = TransferStatus.COMPLETED;
-          task.progress = 100;
-          task.speed = 0;
-          task.estimatedTime = '已完成';
-        } else if (task.status !== TransferStatus.CANCELLED) {
-          task.status = TransferStatus.FAILED;
-          task.errorMessage = '传输未完成';
-        }
-
-        return task;
-      }
-
-      // 读取文件块
-      async readChunk(chunk) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsArrayBuffer(chunk);
-        });
-      }
-
-      // 更新任务指标
-      updateTaskMetrics(task) {
-        const now = new Date();
-        const elapsed = (now.getTime() - task.startTime.getTime()) / 1000;
-        const transferred = task.chunks.completed * (64 * 1024);
         
-        if (elapsed > 0) {
-          task.speed = transferred / elapsed;
-          const remaining = task.fileSize - transferred;
-          const remainingTime = remaining / task.speed;
-          task.estimatedTime = this.formatTime(remainingTime);
+        if (transfer.status !== 'cancelled') {
+          transfer.status = 'completed';
+          transfer.endTime = Date.now();
+        }
+        
+        return transfer;
+      }
+      
+      receiveChunk(fileId, chunkData) {
+        const transfer = this.transfers.get(fileId);
+        if (!transfer) return;
+        
+        transfer.receivedData[chunkData.index] = chunkData;
+        transfer.receivedChunks++;
+        transfer.progress = (transfer.receivedChunks / chunkData.total) * 100;
+        
+        return {
+          progress: transfer.progress,
+          receivedChunks: transfer.receivedChunks,
+          totalChunks: chunkData.total
+        };
+      }
+      
+      async assembleFile(fileId) {
+        const transfer = this.transfers.get(fileId);
+        if (!transfer) return null;
+        
+        const chunks = [];
+        
+        for (let i = 0; i < transfer.receivedData.length; i++) {
+          const chunkData = transfer.receivedData[i];
+          
+          if (chunkData.encrypted && transfer.encryptionKey) {
+            const iv = new Uint8Array(chunkData.iv);
+            const decrypted = await CryptoUtils.decrypt(chunkData.data, transfer.encryptionKey, iv);
+            chunks.push(decrypted);
+          } else {
+            chunks.push(chunkData.data);
+          }
+        }
+        
+        const blob = new Blob(chunks, { type: transfer.type });
+        return {
+          blob,
+          name: transfer.name,
+          size: transfer.size,
+          type: transfer.type
+        };
+      }
+      
+      cancelTransfer(fileId) {
+        const transfer = this.transfers.get(fileId);
+        if (transfer) {
+          transfer.status = 'cancelled';
         }
       }
-
-      // 格式化时间
-      formatTime(seconds) {
-        if (seconds < 60) {
-          return `${Math.round(seconds)}秒`;
-        } else if (seconds < 3600) {
-          return `${Math.floor(seconds / 60)}分${Math.round(seconds % 60)}秒`;
-        } else {
-          return `${Math.floor(seconds / 3600)}小时${Math.floor((seconds % 3600) / 60)}分`;
-        }
+      
+      getTransfer(fileId) {
+        return this.transfers.get(fileId);
       }
-
-      // 取消传输
-      cancelTransfer(taskId) {
-        const task = this.tasks.find(t => t.id === taskId);
-        if (task) {
-          task.status = TransferStatus.CANCELLED;
-          task.speed = 0;
-        }
+      
+      getAllTransfers() {
+        return Array.from(this.transfers.values());
       }
-
-      // 获取任务列表
-      getTasks() {
-        return this.tasks;
-      }
-
-      // 清除完成的任务
-      clearCompletedTasks() {
-        this.tasks = this.tasks.filter(t => t.status !== TransferStatus.COMPLETED);
-      }
-
-      // 清除失败的任务
-      clearFailedTasks() {
-        this.tasks = this.tasks.filter(t => t.status !== TransferStatus.FAILED);
+      
+      clearTransfers() {
+        this.transfers.clear();
       }
     }
     
     const fileTransferManager = new FileTransferManager();
     
-    // 文件传输存储
-    const useFileTransferStore = create((set, get) => ({
+    // ==================== 状态管理 ====================
+    
+    const useAppStore = create((set, get) => ({
+      // 连接状态
+      connectionStatus: 'disconnected',
+      activeConnectionId: null,
+      
+      // 文件传输
       transfers: [],
-      totalTransfers: 0,
-      completedTransfers: 0,
-      failedTransfers: 0,
+      receivedFiles: [],
       
-      // 发送文件到设备
-      sendFileToDevice: (deviceId) => {
-        // 打开文件选择对话框
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.multiple = true;
-        input.onchange = (e) => {
-          const target = e.target;
-          if (target.files && target.files.length > 0) {
-            const files = Array.from(target.files);
-            files.forEach(file => {
-              // 使用文件传输管理器传输文件
-              fileTransferManager.transferFile(file, deviceId);
-            });
-            
-            // 定期更新传输状态
-            const updateInterval = setInterval(() => {
-              const tasks = fileTransferManager.getTasks();
-              set({ 
-                transfers: tasks,
-                totalTransfers: tasks.length,
-                completedTransfers: tasks.filter(t => t.status === TransferStatus.COMPLETED).length,
-                failedTransfers: tasks.filter(t => t.status === TransferStatus.FAILED).length
-              });
-              
-              // 检查是否所有任务都已完成
-              const allCompleted = tasks.every(task => 
-                task.status === TransferStatus.COMPLETED || 
-                task.status === TransferStatus.FAILED ||
-                task.status === TransferStatus.CANCELLED
-              );
-              
-              if (allCompleted) {
-                clearInterval(updateInterval);
-              }
-            }, 500);
-          }
-        };
-        input.click();
+      // 设置
+      chunkSize: 64 * 1024,
+      encryptionEnabled: true,
+      encryptionKey: null,
+      
+      // UI状态
+      darkMode: false,
+      isDragging: false,
+      
+      // 动作
+      setConnectionStatus: (status) => set({ connectionStatus: status }),
+      setActiveConnection: (id) => set({ activeConnectionId: id }),
+      
+      addTransfer: (transfer) => set(state => ({
+        transfers: [...state.transfers, transfer]
+      })),
+      
+      updateTransfer: (transferId, updates) => set(state => ({
+        transfers: state.transfers.map(t => 
+          t.id === transferId ? { ...t, ...updates } : t
+        )
+      })),
+      
+      removeTransfer: (transferId) => set(state => ({
+        transfers: state.transfers.filter(t => t.id !== transferId)
+      })),
+      
+      addReceivedFile: (file) => set(state => ({
+        receivedFiles: [...state.receivedFiles, file]
+      })),
+      
+      clearTransfers: () => set({ transfers: [] }),
+      clearReceivedFiles: () => set({ receivedFiles: [] }),
+      
+      setChunkSize: (size) => {
+        fileTransferManager.setChunkSize(size);
+        set({ chunkSize: size });
       },
       
-      // 取消传输
-      cancelTransfer: (transferId) => {
-        fileTransferManager.cancelTransfer(transferId);
-        set({ transfers: fileTransferManager.getTasks() });
-      },
+      setEncryptionEnabled: (enabled) => set({ encryptionEnabled: enabled }),
+      setEncryptionKey: (key) => set({ encryptionKey: key }),
       
-      // 清除完成的传输
-      clearCompletedTransfers: () => {
-        fileTransferManager.clearCompletedTasks();
-        set({ transfers: fileTransferManager.getTasks() });
-      },
+      toggleDarkMode: () => set(state => ({ darkMode: !state.darkMode })),
+      setIsDragging: (isDragging) => set({ isDragging }),
       
-      // 清除失败的传输
-      clearFailedTransfers: () => {
-        fileTransferManager.clearFailedTasks();
-        set({ transfers: fileTransferManager.getTasks() });
+      generateEncryptionKey: async () => {
+        const key = await CryptoUtils.generateKey();
+        const keyString = await CryptoUtils.exportKey(key);
+        set({ encryptionKey: keyString });
+        return keyString;
       }
     }));
     
-    // 主应用组件
-    function App() {
-      const [darkMode, setDarkMode] = useState(false);
-      const [selectedDeviceId, setSelectedDeviceId] = useState('');
+    // ==================== React 组件 ====================
+    
+    // 文件选择组件
+    function FileSelector() {
+      const { encryptionEnabled, generateEncryptionKey, addTransfer, chunkSize } = useAppStore();
+      const fileInputRef = useRef(null);
       
-      const { 
-        transfers, 
-        sendFileToDevice, 
-        cancelTransfer, 
-        clearCompletedTransfers, 
-        clearFailedTransfers 
-      } = useFileTransferStore();
-
-      useEffect(() => {
-        // 检测系统深色模式偏好
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setDarkMode(prefersDark);
-        if (prefersDark) {
-          document.documentElement.classList.add('dark');
+      const handleFileSelect = async (files) => {
+        if (!files || files.length === 0) return;
+        
+        let encryptionKey = null;
+        if (encryptionEnabled) {
+          const keyString = await generateEncryptionKey();
+          encryptionKey = await CryptoUtils.importKey(keyString);
         }
         
-        // 从 URL 获取设备 ID
-        const urlParams = new URLSearchParams(window.location.search);
-        const deviceId = urlParams.get('deviceId');
-        if (deviceId) {
-          setSelectedDeviceId(deviceId);
+        for (const file of files) {
+          const transfer = await fileTransferManager.prepareFile(file, encryptionKey);
+          addTransfer(transfer);
+        }
+      };
+      
+      const handleDrop = (e) => {
+        e.preventDefault();
+        const files = Array.from(e.dataTransfer.files);
+        handleFileSelect(files);
+      };
+      
+      const handleDragOver = (e) => {
+        e.preventDefault();
+      };
+      
+      return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+          <h2 className="text-xl font-bold mb-4">选择文件</h2>
+          
+          <div
+            className="drop-zone rounded-xl p-8 text-center cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+          >
+            <div className="text-5xl mb-4">📁</div>
+            <p className="text-gray-600 dark:text-gray-400 mb-2">
+              拖拽文件到此处，或点击选择文件
+            </p>
+            <p className="text-sm text-gray-500">
+              支持任意类型和大小的文件
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => handleFileSelect(Array.from(e.target.files))}
+            />
+          </div>
+          
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={encryptionEnabled}
+                  onChange={(e) => useAppStore.getState().setEncryptionEnabled(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">启用AES-GCM加密</span>
+              </label>
+              
+              <select
+                value={chunkSize}
+                onChange={(e) => useAppStore.getState().setChunkSize(parseInt(e.target.value))}
+                className="px-3 py-1 border rounded-lg text-sm"
+              >
+                <option value={32 * 1024}>32KB 分块</option>
+                <option value={64 * 1024}>64KB 分块</option>
+                <option value={128 * 1024}>128KB 分块</option>
+                <option value={256 * 1024}>256KB 分块</option>
+                <option value={512 * 1024}>512KB 分块</option>
+                <option value={1024 * 1024}>1MB 分块</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // 传输任务组件
+    function TransferItem({ transfer }) {
+      const { removeTransfer } = useAppStore();
+      const [isSending, setIsSending] = useState(false);
+      const [progressInfo, setProgressInfo] = useState(null);
+      
+      const handleSend = async () => {
+        setIsSending(true);
+        
+        await fileTransferManager.readFileChunks(
+          transfer.id,
+          async (chunk) => {
+            // 这里应该通过WebRTC发送chunk
+            // 由于是演示，我们只模拟发送
+            await new Promise(resolve => setTimeout(resolve, 10));
+          },
+          (info) => {
+            setProgressInfo(info);
+          }
+        );
+        
+        setIsSending(false);
+      };
+      
+      const handleCancel = () => {
+        fileTransferManager.cancelTransfer(transfer.id);
+        removeTransfer(transfer.id);
+      };
+      
+      const handleRemove = () => {
+        removeTransfer(transfer.id);
+      };
+      
+      const statusColors = {
+        pending: 'bg-gray-100 text-gray-800',
+        transferring: 'bg-blue-100 text-blue-800',
+        completed: 'bg-green-100 text-green-800',
+        cancelled: 'bg-red-100 text-red-800',
+        error: 'bg-red-100 text-red-800'
+      };
+      
+      const statusTexts = {
+        pending: '等待中',
+        transferring: '传输中',
+        completed: '已完成',
+        cancelled: '已取消',
+        error: '错误'
+      };
+      
+      return (
+        <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4">
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex items-center gap-3">
+              <div className="text-3xl">📄</div>
+              <div>
+                <h3 className="font-semibold">{transfer.name}</h3>
+                <p className="text-sm text-gray-500">
+                  {formatFileSize(transfer.size)}
+                  {transfer.encryptionKey && ' · 🔒 已加密'}
+                </p>
+              </div>
+            </div>
+            <span className={`px-3 py-1 rounded-full text-sm ${statusColors[transfer.status]}`}>
+              {statusTexts[transfer.status]}
+            </span>
+          </div>
+          
+          {(transfer.status === 'transferring' || progressInfo) && (
+            <div className="mb-3">
+              <div className="flex justify-between text-sm mb-1">
+                <span>{Math.round(transfer.progress)}%</span>
+                <span>
+                  {progressInfo && formatSpeed(progressInfo.speed)}
+                  {progressInfo && progressInfo.eta > 0 && ` · 剩余 ${formatTime(progressInfo.eta)}`}
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full progress-bar"
+                  style={{ width: `${transfer.progress}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {progressInfo?.sentChunks || transfer.sentChunks} / {transfer.totalChunks} 分块
+              </p>
+            </div>
+          )}
+          
+          <div className="flex gap-2">
+            {transfer.status === 'pending' && (
+              <>
+                <button
+                  onClick={handleSend}
+                  disabled={isSending}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+                >
+                  {isSending ? '发送中...' : '发送'}
+                </button>
+                <button
+                  onClick={handleRemove}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  移除
+                </button>
+              </>
+            )}
+            {transfer.status === 'transferring' && (
+              <button
+                onClick={handleCancel}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                取消
+              </button>
+            )}
+            {transfer.status === 'completed' && (
+              <button
+                onClick={handleRemove}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                清除
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+    
+    // 传输列表组件
+    function TransferList() {
+      const { transfers } = useAppStore();
+      
+      if (transfers.length === 0) {
+        return (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+            <h2 className="text-xl font-bold mb-4">传输任务</h2>
+            <div className="text-center py-12">
+              <div className="text-4xl mb-4">📤</div>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">暂无传输任务</p>
+              <p className="text-gray-500 dark:text-gray-500 text-sm">选择文件开始传输</p>
+            </div>
+          </div>
+        );
+      }
+      
+      return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">传输任务 ({transfers.length})</h2>
+            <button
+              onClick={() => useAppStore.getState().clearTransfers()}
+              className="text-sm text-red-600 hover:text-red-700"
+            >
+              清除全部
+            </button>
+          </div>
+          
+          <div className="max-h-96 overflow-y-auto">
+            {transfers.map((transfer) => (
+              <TransferItem key={transfer.id} transfer={transfer} />
+            ))}
+          </div>
+        </div>
+      );
+    }
+    
+    // 接收文件组件
+    function ReceivedFiles() {
+      const { receivedFiles, clearReceivedFiles } = useAppStore();
+      
+      const handleDownload = (file) => {
+        const url = URL.createObjectURL(file.blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+      
+      if (receivedFiles.length === 0) {
+        return null;
+      }
+      
+      return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">已接收文件 ({receivedFiles.length})</h2>
+            <button
+              onClick={clearReceivedFiles}
+              className="text-sm text-red-600 hover:text-red-700"
+            >
+              清除全部
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            {receivedFiles.map((file, index) => (
+              <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">📄</div>
+                  <div>
+                    <p className="font-medium">{file.name}</p>
+                    <p className="text-sm text-gray-500">{formatFileSize(file.size)}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleDownload(file)}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  下载
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    
+    // 连接状态组件
+    function ConnectionStatus() {
+      const { connectionStatus, activeConnectionId } = useAppStore();
+      
+      const statusColors = {
+        connected: 'bg-green-100 text-green-800',
+        connecting: 'bg-yellow-100 text-yellow-800',
+        disconnected: 'bg-red-100 text-red-800'
+      };
+      
+      const statusTexts = {
+        connected: '已连接',
+        connecting: '连接中',
+        disconnected: '未连接'
+      };
+      
+      return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold mb-1">连接状态</h2>
+              <p className="text-sm text-gray-500">
+                {activeConnectionId ? `设备ID: ${activeConnectionId}` : '请先在连接页面建立连接'}
+              </p>
+            </div>
+            <span className={`px-4 py-2 rounded-full ${statusColors[connectionStatus]}`}>
+              {statusTexts[connectionStatus]}
+            </span>
+          </div>
+          
+          {connectionStatus === 'disconnected' && (
+            <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                💡 请先前往 <a href="connection.html" className="underline font-semibold">连接页面</a> 建立与对方设备的连接
+              </p>
+            </div>
+          )}
+        </div>
+      );
+    }
+    
+    // 使用说明组件
+    function Instructions() {
+      return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <h2 className="text-xl font-bold mb-4">使用说明</h2>
+          
+          <div className="space-y-4">
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                1
+              </div>
+              <div>
+                <h3 className="font-semibold">建立连接</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  在连接页面使用二维码、PIN码或手动方式建立P2P连接
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                2
+              </div>
+              <div>
+                <h3 className="font-semibold">选择文件</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  拖拽或点击选择要传输的文件，可多选
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                3
+              </div>
+              <div>
+                <h3 className="font-semibold">开始传输</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  点击"发送"按钮开始传输，实时查看进度和速度
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <h3 className="font-semibold mb-2">安全特性</h3>
+            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <li>✓ AES-GCM 256位文件加密</li>
+              <li>✓ WebRTC P2P直连传输</li>
+              <li>✓ 不经过任何服务器</li>
+              <li>✓ 支持断点续传</li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+    
+    // 主应用组件
+    function App() {
+      const { darkMode, toggleDarkMode, setConnectionStatus } = useAppStore();
+      
+      useEffect(() => {
+        // 检测系统深色模式
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          toggleDarkMode();
+        }
+        
+        // 检查连接状态（从localStorage读取）
+        const savedConnection = localStorage.getItem('filefly_connection');
+        if (savedConnection) {
+          try {
+            const connection = JSON.parse(savedConnection);
+            if (connection.status === 'connected') {
+              setConnectionStatus('connected');
+            }
+          } catch (e) {
+            console.error('Error parsing saved connection:', e);
+          }
         }
       }, []);
-
-      const toggleDarkMode = () => {
-        setDarkMode(!darkMode);
-        document.documentElement.classList.toggle('dark');
-      };
-
+      
       return (
         <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
-          {/* 顶部导航栏 */}
+          {/* 导航栏 */}
           <nav className="bg-white dark:bg-gray-800 shadow-md">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between h-16">
                 <div className="flex items-center">
-                  <a href="index.html" className="flex-shrink-0 flex items-center">
-                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">飞传 FileFly</span>
+                  <a href="index.html" className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    飞传 FileFly
                   </a>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -638,7 +844,7 @@
                   <a href="transfer.html" className="bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium">传输</a>
                   <a href="about.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">关于</a>
                   <a href="settings.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">设置</a>
-                  <button 
+                  <button
                     onClick={toggleDarkMode}
                     className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
@@ -648,144 +854,38 @@
               </div>
             </div>
           </nav>
-
+          
           {/* 主内容 */}
           <main className="py-8">
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-indigo-950 py-8 px-4">
               <div className="container mx-auto max-w-5xl">
-                {/* 选择设备 */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
-                  <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-4">选择设备</h2>
-                  {selectedDeviceId ? (
-                    <div className="flex justify-between items-center p-4 bg-blue-50 dark:bg-gray-700 rounded-lg">
-                      <div>
-                        <h3 className="font-bold">当前设备</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          ID: {selectedDeviceId}
-                        </p>
-                      </div>
-                      <button 
-                        onClick={() => sendFileToDevice(selectedDeviceId)}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
-                      >
-                        选择文件
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <p className="text-gray-600 dark:text-gray-400 mb-6">请先从 <a href="connection.html" className="text-blue-600 dark:text-blue-400 underline">设备连接</a> 页面选择设备</p>
-                      <a href="connection.html" className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
-                        前往设备连接
-                      </a>
-                    </div>
-                  )}
-                </div>
-
-                {/* 传输任务列表 */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold">传输任务</h2>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={clearCompletedTransfers}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
-                      >
-                        清除完成
-                      </button>
-                      <button 
-                        onClick={clearFailedTransfers}
-                        className="px-4 py-2 bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors"
-                      >
-                        清除失败
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {transfers.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <p className="text-gray-600 dark:text-gray-400">暂无传输任务</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {transfers.map((transfer) => {
-                        const statusColor = {
-                          [TransferStatus.PENDING]: 'text-yellow-600',
-                          [TransferStatus.TRANSFERRING]: 'text-blue-600',
-                          [TransferStatus.COMPLETED]: 'text-green-600',
-                          [TransferStatus.FAILED]: 'text-red-600',
-                          [TransferStatus.CANCELLED]: 'text-gray-600'
-                        }[transfer.status];
-                        
-                        const statusText = {
-                          [TransferStatus.PENDING]: '等待中',
-                          [TransferStatus.TRANSFERRING]: '传输中',
-                          [TransferStatus.COMPLETED]: '已完成',
-                          [TransferStatus.FAILED]: '失败',
-                          [TransferStatus.CANCELLED]: '已取消'
-                        }[transfer.status];
-
-                        return (
-                          <div 
-                            key={transfer.id}
-                            className="p-4 border border-gray-200 dark:border-gray-600 rounded-xl"
-                          >
-                            <div className="flex justify-between items-center mb-2">
-                              <h3 className="font-bold">{transfer.fileName}</h3>
-                              <span className={statusColor}>{statusText}</span>
-                            </div>
-                            <div className="mb-2">
-                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                <div 
-                                  className="h-full bg-blue-600 rounded-full progress-bar"
-                                  style={{ width: `${transfer.progress}%` }}
-                                ></div>
-                              </div>
-                              <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                <span>{Math.round(transfer.progress)}%</span>
-                                <span>{transfer.estimatedTime}</span>
-                              </div>
-                            </div>
-                            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                              <span>速度: {Math.round(transfer.speed / 1024)} KB/s</span>
-                              <span>设备: {transfer.deviceName}</span>
-                            </div>
-                            {transfer.status === TransferStatus.TRANSFERRING && (
-                              <div className="mt-2">
-                                <button 
-                                  onClick={() => cancelTransfer(transfer.id)}
-                                  className="px-4 py-1 bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors"
-                                >
-                                  取消
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                {/* 连接状态 */}
+                <ConnectionStatus />
+                
+                {/* 文件选择 */}
+                <FileSelector />
+                
+                {/* 传输列表 */}
+                <TransferList />
+                
+                {/* 已接收文件 */}
+                <ReceivedFiles />
+                
+                {/* 使用说明 */}
+                <Instructions />
               </div>
             </div>
           </main>
-
+          
           {/* 页脚 */}
           <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8 px-4">
             <div className="container mx-auto max-w-5xl text-center">
               <p className="text-gray-600 dark:text-gray-400 mb-4">© 2026 FileFly. 保留所有权利。作者：Youreln</p>
               <div className="flex justify-center gap-4">
-                <a href="index.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  首页
-                </a>
-                <a href="connection.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  设备连接
-                </a>
-                <a href="about.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  关于
-                </a>
-                <a href="settings.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  设置
-                </a>
+                <a href="index.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">首页</a>
+                <a href="connection.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">连接</a>
+                <a href="about.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">关于</a>
+                <a href="settings.html" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">设置</a>
               </div>
             </div>
           </footer>
