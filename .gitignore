@@ -8,6 +8,10 @@ uploads/*
 # Config
 config.json
 
+# Build output
+release/
+dist/
+
 # Logs
 *.log
 npm-debug.log*
@@ -22,6 +26,8 @@ Thumbs.db
 *.swp
 *.swo
 
-# Build
-dist/
-build/
+# Electron
+out/
+
+# PWA icons (generated)
+public/icons/

@@ -82,7 +82,7 @@ const upload = multer({
 });
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 const accessLogs = [];
 
@@ -112,11 +112,11 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/settings', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'settings.html'));
+    res.sendFile(path.join(__dirname, 'settings.html'));
 });
 
 app.get('/api/config', (req, res) => {

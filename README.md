@@ -13,7 +13,7 @@
 **版权**: © 2026 Youreln 版权所有  
 **开源地址**: [https://github.com/Youreln/FileFly](https://github.com/Youreln/FileFly)
 
-**🌐 [在线演示](https://youreln.github.io/FileFly) | 📥 [下载源码](https://github.com/Youreln/FileFly/archive/refs/heads/main.zip)**
+**🌐 [在线演示](https://youreln.github.io/FileFly) | 📥 [下载客户端](https://github.com/Youreln/FileFly/releases)**
 
 </div>
 
@@ -34,27 +34,78 @@
 
 ---
 
-## 🛠️ 技术栈
+## � 客户端下载
+
+### 桌面端
+
+| 平台 | 下载 | 说明 |
+|------|------|------|
+| Windows | [FileFly-Setup.exe](https://github.com/Youreln/FileFly/releases) | 安装包，支持开机自启 |
+| Windows | [FileFly-Portable.exe](https://github.com/Youreln/FileFly/releases) | 便携版，免安装 |
+| macOS | [FileFly.dmg](https://github.com/Youreln/FileFly/releases) | DMG 安装包 |
+| Linux | [FileFly.AppImage](https://github.com/Youreln/FileFly/releases) | AppImage 便携版 |
+
+**桌面端优势：**
+- ✅ 后台运行，系统托盘常驻
+- ✅ 开机自启动
+- ✅ 原生通知提醒
+- ✅ 更稳定的文件传输
+
+### 移动端 (PWA)
+
+| 平台 | 安装方式 |
+|------|---------|
+| Android | 浏览器打开 → 菜单 → 添加到主屏幕 |
+| iOS | Safari 打开 → 分享 → 添加到主屏幕 |
+
+**移动端优势：**
+- ✅ 离线访问支持
+- ✅ 类原生应用体验
+- ✅ 推送通知
+- ✅ 全屏运行
+
+---
+
+## ⚠️ 网页版局限性说明
+
+当前 GitHub Pages 演示版本存在以下限制：
+
+| 功能 | 网页版 | 客户端 |
+|------|--------|--------|
+| 文件传输 | ❌ 需要自建服务端 | ✅ 内置服务端 |
+| 后台运行 | ❌ 关闭页面即停止 | ✅ 最小化到托盘 |
+| 离线使用 | ❌ 需要网络 | ✅ 完全离线 |
+| 开机自启 | ❌ 不支持 | ✅ 支持 |
+| 系统通知 | ⚠️ 部分支持 | ✅ 完整支持 |
+
+**建议：** 如需完整功能，请下载对应平台的客户端！
+
+---
+
+## �🛠️ 技术栈
 
 | 技术 | 说明 |
 |------|------|
 | Node.js | 后端运行环境 |
 | Express | Web服务框架 |
+| Electron | 桌面应用框架 |
 | Multer | 文件上传处理 |
 | Archiver | ZIP打包下载 |
 | QRCode | 二维码生成 |
+| PWA | 移动端渐进式应用 |
 | Font Awesome | 图标库 |
 
 ---
 
 ## 📦 安装与启动
 
-### 环境要求
+### 方式一：下载客户端（推荐）
 
-- Node.js >= 14.0.0
-- npm 或 yarn
+1. 前往 [Releases](https://github.com/Youreln/FileFly/releases) 页面
+2. 下载对应平台的安装包
+3. 安装并运行
 
-### 快速开始
+### 方式二：源码运行
 
 ```bash
 # 克隆项目
@@ -70,6 +121,16 @@ npm install
 npm start
 ```
 
+### 方式三：开发模式
+
+```bash
+# 安装依赖
+npm install
+
+# 启动 Electron 开发模式
+npm run electron:dev
+```
+
 启动成功后，控制台会显示访问地址：
 
 ```
@@ -83,15 +144,37 @@ npm start
   局域网: http://192.168.x.x:3000
 ```
 
-### 自定义端口
+---
+
+## 🔨 构建客户端
+
+### 构建桌面应用
 
 ```bash
-# 方式1: 环境变量
-PORT=8080 npm start
+# 安装依赖
+npm install
 
-# 方式2: 修改配置
-# 编辑 config.json 文件中的 port 字段
+# 构建 Windows 版
+npm run build:win
+
+# 构建 macOS 版
+npm run build:mac
+
+# 构建 Linux 版
+npm run build:linux
+
+# 构建所有平台
+npm run build:all
 ```
+
+构建产物位于 `release/` 目录。
+
+### 构建要求
+
+- Node.js >= 14.0.0
+- Windows: 无额外要求
+- macOS: Xcode Command Line Tools
+- Linux: fakeroot, dpkg
 
 ---
 
@@ -172,21 +255,23 @@ PORT=8080 npm start
 ```
 FileFly/
 ├── index.js              # 主服务入口
+├── electron.js           # Electron 主进程
 ├── package.json          # 依赖配置
-├── config.json           # 运行时配置（自动生成）
-├── public/
+├── public/               # 前端文件
 │   ├── index.html        # 主页面
 │   ├── settings.html     # 设置页面
 │   ├── style.css         # 样式文件
-│   └── app.js            # 前端逻辑
-├── utils/
+│   ├── app.js            # 前端逻辑
+│   ├── manifest.json     # PWA 配置
+│   └── sw.js             # Service Worker
+├── utils/                # 后端工具
 │   ├── ip.js             # IP获取工具
 │   ├── auth.js           # 认证工具
 │   └── fileManager.js    # 文件管理工具
+├── assets/               # 应用图标
+├── scripts/              # 构建脚本
 ├── uploads/              # 文件存储目录
-├── docs/                 # GitHub Pages 静态页面
-│   ├── index.html        # 演示首页
-│   └── style.css         # 演示样式
+├── docs/                 # GitHub Pages
 └── README.md             # 使用文档
 ```
 
@@ -203,16 +288,6 @@ FileFly/
 3. Source 选择 "GitHub Actions"
 4. 推送代码后自动部署
 
-### 手动部署
-
-```bash
-# docs 目录已包含静态页面
-# 直接推送到 GitHub 即可
-git add .
-git commit -m "Update pages"
-git push
-```
-
 部署完成后访问：`https://你的用户名.github.io/FileFly`
 
 ---
@@ -226,7 +301,6 @@ git push
 2. 检查防火墙是否放行端口
 3. Windows防火墙设置：
    ```bash
-   # 添加防火墙规则（管理员权限）
    netsh advfirewall firewall add rule name="FileFly" dir=in action=allow protocol=tcp localport=3000
    ```
 
@@ -257,6 +331,12 @@ PORT=8080 npm start
 **A:** 
 直接在手机浏览器输入显示的局域网地址即可。
 
+### Q: 如何安装 PWA 到手机？
+
+**A:**
+- **Android**: 浏览器菜单 → 添加到主屏幕
+- **iOS**: Safari 分享 → 添加到主屏幕
+
 ---
 
 ## 🔄 更新日志
@@ -269,6 +349,8 @@ PORT=8080 npm start
 - 🎨 炫酷界面设计
 - 📱 全平台兼容
 - 🌐 GitHub Pages 在线演示
+- 💻 Electron 桌面客户端
+- 📲 PWA 移动端支持
 
 ---
 
