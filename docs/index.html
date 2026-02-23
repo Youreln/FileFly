@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞传 FileFly - 局域网高速文件传输工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <meta name="description" content="飞传 FileFly - 现代化局域网高速文件传输工具，支持多设备间快速安全传输文件">
+    <meta name="keywords" content="文件传输,局域网,FileFly,飞传,文件共享">
+    <meta name="author" content="Youreln">
+    <meta property="og:title" content="飞传 FileFly - 局域网高速文件传输工具">
+    <meta property="og:description" content="现代化局域网高速文件传输工具，支持多设备间快速安全传输文件">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://youreln.github.io/FileFly">
+</head>
+<body>
+    <div class="gradient-bg"></div>
+    <div class="particles" id="particles"></div>
+    
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-paper-plane"></i>
+            <span>飞传 FileFly</span>
+        </div>
+        <div class="header-actions">
+            <a href="https://github.com/Youreln/FileFly" target="_blank" class="github-btn">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero animate-fade-in">
+            <div class="hero-content">
+                <div class="hero-icon">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h1>飞传 FileFly</h1>
+                <p class="hero-subtitle">局域网高速文件传输工具</p>
+                <p class="hero-desc">无需安装客户端，浏览器即可使用。支持多设备间快速、安全地传输文件。</p>
+                <div class="hero-buttons">
+                    <a href="https://github.com/Youreln/FileFly" class="btn btn-primary">
+                        <i class="fab fa-github"></i> 查看源码
+                    </a>
+                    <a href="#features" class="btn btn-secondary">
+                        <i class="fas fa-info-circle"></i> 了解更多
+                    </a>
+                </div>
+            </div>
+            <div class="hero-preview">
+                <div class="preview-window">
+                    <div class="preview-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="preview-title">飞传 FileFly</span>
+                    </div>
+                    <div class="preview-content">
+                        <div class="preview-qr">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="preview-info">
+                            <div class="preview-line"></div>
+                            <div class="preview-line short"></div>
+                            <div class="preview-line"></div>
+                        </div>
+                        <div class="preview-upload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>拖拽文件到此处上传</span>
+                        </div>
+                        <div class="preview-files">
+                            <div class="preview-file"></div>
+                            <div class="preview-file"></div>
+                            <div class="preview-file"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section" id="features">
+            <h2 class="section-title animate-fade-in">
+                <i class="fas fa-star"></i> 核心特性
+            </h2>
+            <div class="features-grid">
+                <div class="feature-card animate-fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h3>多方式连接</h3>
+                    <ul>
+                        <li>自动获取局域网IP</li>
+                        <li>二维码扫码连接</li>
+                        <li>热点直连支持</li>
+                        <li>自定义端口启动</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.1s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>超强传输</h3>
+                    <ul>
+                        <li>多选/文件夹上传</li>
+                        <li>拖拽上传</li>
+                        <li>截图粘贴上传</li>
+                        <li>大文件支持 (4GB+)</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3>实时进度</h3>
+                    <ul>
+                        <li>字节级进度条</li>
+                        <li>实时速度显示</li>
+                        <li>上传队列管理</li>
+                        <li>断点续传支持</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.3s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h3>文件管理</h3>
+                    <ul>
+                        <li>实时文件列表</li>
+                        <li>批量ZIP下载</li>
+                        <li>类型图标识别</li>
+                        <li>一键清空功能</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.4s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>安全权限</h3>
+                    <ul>
+                        <li>访问密码保护</li>
+                        <li>权限开关控制</li>
+                        <li>文件自动清理</li>
+                        <li>访问日志记录</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.5s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>炫酷界面</h3>
+                    <ul>
+                        <li>现代科技风格</li>
+                        <li>渐变流动背景</li>
+                        <li>深浅主题切换</li>
+                        <li>响应式布局</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-section" id="tech">
+            <h2 class="section-title animate-fade-in">
+                <i class="fas fa-code"></i> 技术栈
+            </h2>
+            <div class="tech-grid animate-fade-in">
+                <div class="tech-item">
+                    <i class="fab fa-node-js"></i>
+                    <span>Node.js</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-server"></i>
+                    <span>Express</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Multer</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-file-archive"></i>
+                    <span>Archiver</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-qrcode"></i>
+                    <span>QRCode</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-font-awesome"></i>
+                    <span>Font Awesome</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="install-section" id="install">
+            <h2 class="section-title animate-fade-in">
+                <i class="fas fa-download"></i> 快速开始
+            </h2>
+            <div class="install-steps animate-fade-in">
+                <div class="install-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>克隆项目</h4>
+                        <div class="code-block">
+                            <code>git clone https://github.com/Youreln/FileFly.git</code>
+                            <button class="copy-btn" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>安装依赖</h4>
+                        <div class="code-block">
+                            <code>cd FileFly && npm install</code>
+                            <button class="copy-btn" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>启动服务</h4>
+                        <div class="code-block">
+                            <code>npm start</code>
+                            <button class="copy-btn" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="install-note animate-fade-in">
+                <i class="fas fa-lightbulb"></i>
+                <p>启动后访问 <code>http://localhost:3000</code> 即可使用！</p>
+            </div>
+        </section>
+
+        <section class="connect-section" id="connect">
+            <h2 class="section-title animate-fade-in">
+                <i class="fas fa-link"></i> 连接方式
+            </h2>
+            <div class="connect-grid animate-fade-in">
+                <div class="connect-card">
+                    <div class="connect-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h4>局域网连接</h4>
+                    <p>确保设备连接同一WiFi，使用局域网IP访问</p>
+                </div>
+                <div class="connect-card">
+                    <div class="connect-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h4>扫码连接</h4>
+                    <p>手机扫描二维码，一键跳转到传输页面</p>
+                </div>
+                <div class="connect-card">
+                    <div class="connect-icon">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h4>热点直连</h4>
+                    <p>电脑开启热点，手机连接后使用热点IP访问</p>
+                </div>
+                <div class="connect-card">
+                    <div class="connect-icon">
+                        <i class="fas fa-usb"></i>
+                    </div>
+                    <h4>USB共享</h4>
+                    <p>手机USB连接电脑，开启网络共享访问</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="screenshot-section" id="screenshot">
+            <h2 class="section-title animate-fade-in">
+                <i class="fas fa-image"></i> 界面预览
+            </h2>
+            <div class="screenshot-grid animate-fade-in">
+                <div class="screenshot-item">
+                    <div class="screenshot-placeholder">
+                        <i class="fas fa-desktop"></i>
+                        <span>桌面端界面</span>
+                    </div>
+                    <p>深色主题</p>
+                </div>
+                <div class="screenshot-item">
+                    <div class="screenshot-placeholder light">
+                        <i class="fas fa-sun"></i>
+                        <span>桌面端界面</span>
+                    </div>
+                    <p>浅色主题</p>
+                </div>
+                <div class="screenshot-item">
+                    <div class="screenshot-placeholder mobile">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>移动端界面</span>
+                    </div>
+                    <p>响应式布局</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2026 <a href="https://github.com/Youreln" target="_blank">Youreln</a> · 飞传 FileFly</p>
+            <p class="footer-links">
+                <a href="https://github.com/Youreln/FileFly" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <a href="https://github.com/Youreln/FileFly/issues" target="_blank">
+                    <i class="fas fa-bug"></i> 反馈问题
+                </a>
+                <a href="https://github.com/Youreln/FileFly/stargazers" target="_blank">
+                    <i class="fas fa-star"></i> Star
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // 创建粒子效果
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // 主题切换
+        function initTheme() {
+            const savedTheme = localStorage.getItem('filefly_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+        
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('#themeToggle i');
+            icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+        
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('filefly_theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+        
+        // 复制代码
+        function copyCode(btn) {
+            const code = btn.parentElement.querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('已复制到剪贴板', 'success');
+            });
+        }
+        
+        // Toast提示
+        function showToast(message, type) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-times-circle',
+                info: 'fa-info-circle'
+            };
+            
+            toast.innerHTML = '<i class="fas ' + icons[type] + '"></i><span>' + message + '</span>';
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // 初始化
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        createParticles();
+        initTheme();
+    </script>
+</body>
+</html>

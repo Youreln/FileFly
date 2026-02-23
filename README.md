@@ -7,10 +7,13 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-green.svg)](https://nodejs.org)
 [![Author](https://img.shields.io/badge/author-Youreln-orange.svg)](https://github.com/Youreln)
+[![Pages](https://img.shields.io/badge/GitHub-Pages-brightgreen.svg)](https://youreln.github.io/FileFly)
 
 **作者**: Youreln  
 **版权**: © 2026 Youreln 版权所有  
 **开源地址**: [https://github.com/Youreln/FileFly](https://github.com/Youreln/FileFly)
+
+**🌐 [在线演示](https://youreln.github.io/FileFly) | 📥 [下载源码](https://github.com/Youreln/FileFly/archive/refs/heads/main.zip)**
 
 </div>
 
@@ -181,8 +184,36 @@ FileFly/
 │   ├── auth.js           # 认证工具
 │   └── fileManager.js    # 文件管理工具
 ├── uploads/              # 文件存储目录
+├── docs/                 # GitHub Pages 静态页面
+│   ├── index.html        # 演示首页
+│   └── style.css         # 演示样式
 └── README.md             # 使用文档
 ```
+
+---
+
+## 🚀 部署到 GitHub Pages
+
+本项目支持自动部署到 GitHub Pages，提供在线演示页面。
+
+### 自动部署
+
+1. Fork 本项目到你的 GitHub
+2. 进入仓库 Settings → Pages
+3. Source 选择 "GitHub Actions"
+4. 推送代码后自动部署
+
+### 手动部署
+
+```bash
+# docs 目录已包含静态页面
+# 直接推送到 GitHub 即可
+git add .
+git commit -m "Update pages"
+git push
+```
+
+部署完成后访问：`https://你的用户名.github.io/FileFly`
 
 ---
 
@@ -237,6 +268,7 @@ PORT=8080 npm start
 - 🔒 安全权限控制
 - 🎨 炫酷界面设计
 - 📱 全平台兼容
+- 🌐 GitHub Pages 在线演示
 
 ---
 

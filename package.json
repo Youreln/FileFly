@@ -5,6 +5,7 @@
   "main": "index.js",
   "author": "Youreln",
   "license": "MIT",
+  "homepage": "https://youreln.github.io/FileFly",
   "repository": {
     "type": "git",
     "url": "https://github.com/Youreln/FileFly"
@@ -14,7 +15,8 @@
     "lan",
     "local-network",
     "upload",
-    "download"
+    "download",
+    "filefly"
   ],
   "scripts": {
     "start": "node index.js",

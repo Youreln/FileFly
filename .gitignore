@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Config
+config.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build
+dist/
+build/
