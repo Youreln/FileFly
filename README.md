@@ -8,6 +8,7 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-green.svg)](https://nodejs.org)
 [![Author](https://img.shields.io/badge/author-Youreln-orange.svg)](https://github.com/Youreln)
 [![Pages](https://img.shields.io/badge/GitHub-Pages-brightgreen.svg)](https://youreln.github.io/FileFly)
+[![Release](https://img.shields.io/github/v/release/Youreln/FileFly)](https://github.com/Youreln/FileFly/releases)
 
 **作者**: Youreln  
 **版权**: © 2026 Youreln 版权所有  
@@ -21,7 +22,7 @@
 
 ## 📖 项目简介
 
-**飞传 FileFly** 是一款现代化的局域网文件传输工具，支持多设备间快速、安全地传输文件。无需安装客户端，只需浏览器即可使用。
+**飞传 FileFly** 是一款现代化的局域网文件传输工具，支持多设备间快速、安全地传输文件。无需安装客户端，只需浏览器即可使用；也提供 Windows / macOS / Linux 桌面客户端与移动端 PWA，满足完整使用场景。
 
 ### ✨ 核心特性
 
@@ -34,43 +35,51 @@
 
 ---
 
-## � 客户端下载
+## 📥 客户端下载
 
-### 桌面端
+### 桌面端（v1.1.0）
 
-| 平台 | 下载 | 说明 |
+| 平台 | 架构 | 下载 |
 |------|------|------|
-| Windows | [FileFly-Setup.exe](https://github.com/Youreln/FileFly/releases) | 安装包，支持开机自启 |
-| Windows | [FileFly-Portable.exe](https://github.com/Youreln/FileFly/releases) | 便携版，免安装 |
-| macOS | [FileFly.dmg](https://github.com/Youreln/FileFly/releases) | DMG 安装包 |
-| Linux | [FileFly.AppImage](https://github.com/Youreln/FileFly/releases) | AppImage 便携版 |
+| Windows | 64位 | [安装包 FileFly-Setup-1.1.0-x64.exe](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Setup-1.1.0-x64.exe) |
+| Windows | 32位 | [安装包 FileFly-Setup-1.1.0-ia32.exe](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Setup-1.1.0-ia32.exe) |
+| Windows | 64位 | [便携版 FileFly-Portable-1.1.0-x64.exe](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Portable-1.1.0-x64.exe) |
+| macOS | Apple 芯片 (M1/M2/M3/M4) | [FileFly-1.1.0-mac-arm64.dmg](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-mac-arm64.dmg) |
+| macOS | Intel 芯片 | [FileFly-1.1.0-mac-x64.dmg](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-mac-x64.dmg) |
+| Linux | x64 | [FileFly-1.1.0-linux-x64.AppImage](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-x64.AppImage) |
+| Linux | x64 | [FileFly-1.1.0-linux-x64.deb](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-x64.deb) |
+
+> 📌 所有版本见 [Releases 页面](https://github.com/Youreln/FileFly/releases)
 
 **桌面端优势：**
 - ✅ 后台运行，系统托盘常驻
-- ✅ 开机自启动
+- ✅ 开机自启动（可在菜单/托盘开启）
 - ✅ 原生通知提醒
 - ✅ 更稳定的文件传输
+- ✅ 配置与文件数据保存在用户目录，卸载重装不丢失
+
+> ⚠️ **macOS 首次打开提示**：当前版本未进行 Apple 签名，首次打开若提示"无法验证开发者"，请在 系统设置 → 隐私与安全性 → 点击"仍要打开"，或右键应用 → 打开。
 
 ### 移动端 (PWA)
 
 | 平台 | 安装方式 |
 |------|---------|
-| Android | 浏览器打开 → 菜单 → 添加到主屏幕 |
-| iOS | Safari 打开 → 分享 → 添加到主屏幕 |
+| Android | Chrome/Edge 打开 FileFly 页面 → 菜单 → 添加到主屏幕 |
+| iOS | Safari 打开 FileFly 页面 → 分享 → 添加到主屏幕 |
 
 **移动端优势：**
-- ✅ 离线访问支持
+- ✅ 无需安装包，扫码即用
+- ✅ 离线访问支持（PWA 缓存）
 - ✅ 类原生应用体验
-- ✅ 推送通知
 - ✅ 全屏运行
 
 ---
 
 ## ⚠️ 网页版局限性说明
 
-当前 GitHub Pages 演示版本存在以下限制：
+当前 GitHub Pages 演示版本为静态页面，无法提供实际文件传输功能。请下载客户端或自建服务端使用完整功能：
 
-| 功能 | 网页版 | 客户端 |
+| 功能 | 网页版(GitHub Pages) | 客户端 |
 |------|--------|--------|
 | 文件传输 | ❌ 需要自建服务端 | ✅ 内置服务端 |
 | 后台运行 | ❌ 关闭页面即停止 | ✅ 最小化到托盘 |
@@ -82,7 +91,7 @@
 
 ---
 
-## �🛠️ 技术栈
+## 🛠️ 技术栈
 
 | 技术 | 说明 |
 |------|------|
@@ -105,7 +114,7 @@
 2. 下载对应平台的安装包
 3. 安装并运行
 
-### 方式二：源码运行
+### 方式二：源码运行（Web 服务）
 
 ```bash
 # 克隆项目
@@ -121,7 +130,7 @@ npm install
 npm start
 ```
 
-### 方式三：开发模式
+### 方式三：开发模式（Electron）
 
 ```bash
 # 安装依赖
@@ -136,7 +145,6 @@ npm run electron:dev
 ```
 =================================
   飞传 FileFly 已启动!
-  作者: Youreln
 =================================
 
 访问地址:
@@ -157,7 +165,7 @@ npm install
 # 构建 Windows 版
 npm run build:win
 
-# 构建 macOS 版
+# 构建 macOS 版（需在 macOS 上执行）
 npm run build:mac
 
 # 构建 Linux 版
@@ -173,8 +181,17 @@ npm run build:all
 
 - Node.js >= 14.0.0
 - Windows: 无额外要求
-- macOS: Xcode Command Line Tools
+- macOS: 需在 macOS 上构建（Xcode Command Line Tools）
 - Linux: fakeroot, dpkg
+
+### 自动构建（GitHub Actions）
+
+推送 `v*` 标签到仓库后，会自动在 Windows/macOS/Linux 三平台构建并发布到 Releases：
+
+```bash
+git tag v1.1.0
+git push origin v1.1.0
+```
 
 ---
 
@@ -254,24 +271,20 @@ npm run build:all
 
 ```
 FileFly/
-├── index.js              # 主服务入口
+├── index.js              # 主服务入口（支持内嵌模式供 Electron 调用）
 ├── electron.js           # Electron 主进程
 ├── package.json          # 依赖配置
-├── public/               # 前端文件
-│   ├── index.html        # 主页面
-│   ├── settings.html     # 设置页面
-│   ├── style.css         # 样式文件
-│   ├── app.js            # 前端逻辑
-│   ├── manifest.json     # PWA 配置
-│   └── sw.js             # Service Worker
+├── assets/               # 应用图标（打包必需）
+├── icons/                # PWA 图标
+├── public/               # 前端文件（构建时同步）
 ├── utils/                # 后端工具
 │   ├── ip.js             # IP获取工具
 │   ├── auth.js           # 认证工具
 │   └── fileManager.js    # 文件管理工具
-├── assets/               # 应用图标
 ├── scripts/              # 构建脚本
 ├── uploads/              # 文件存储目录
-├── docs/                 # GitHub Pages
+├── docs/                 # GitHub Pages 页面
+├── .github/workflows/    # 自动部署与自动构建
 └── README.md             # 使用文档
 ```
 
@@ -304,42 +317,76 @@ FileFly/
    netsh advfirewall firewall add rule name="FileFly" dir=in action=allow protocol=tcp localport=3000
    ```
 
+### Q: macOS 打开提示"无法验证开发者"？
+
+**A:** 当前版本未进行 Apple 签名，首次打开请：
+- 右键应用图标 → 打开 → 仍要打开
+- 或 系统设置 → 隐私与安全性 → 仍要打开
+
+### Q: Linux AppImage 无法运行？
+
+**A:**
+```bash
+chmod +x FileFly-1.1.0-linux-x64.AppImage
+./FileFly-1.1.0-linux-x64.AppImage
+# 若提示缺少 FUSE：
+./FileFly-1.1.0-linux-x64.AppImage --appimage-extract-and-run
+```
+
 ### Q: 上传大文件失败？
 
-**A:** 
+**A:**
 1. 默认支持最大10GB文件
 2. 如需更大，修改 index.js 中的 `limits.fileSize`
 
 ### Q: 如何修改端口？
 
-**A:** 
+**A:**
 ```bash
 # 临时修改
 PORT=8080 npm start
-
-# 永久修改
-# 编辑 config.json 或在设置页面修改
 ```
 
 ### Q: 忘记密码怎么办？
 
-**A:** 
-删除 `config.json` 文件或手动编辑移除 password 字段。
+**A:**
+- Web 版：删除项目目录下 `config.json` 文件或手动编辑移除 password 字段
+- 桌面端：删除用户数据目录下的 `config.json`（Windows 为 `%APPDATA%\飞传 FileFly` 或 `%APPDATA%\com.youreln.filefly`）
 
 ### Q: 手机无法扫描二维码？
 
-**A:** 
+**A:**
 直接在手机浏览器输入显示的局域网地址即可。
 
 ### Q: 如何安装 PWA 到手机？
 
 **A:**
-- **Android**: 浏览器菜单 → 添加到主屏幕
+- **Android**: Chrome 菜单 → 添加到主屏幕
 - **iOS**: Safari 分享 → 添加到主屏幕
 
 ---
 
 ## 🔄 更新日志
+
+### v1.1.0 (2026-09-26)
+
+**🐛 修复：**
+- 修复桌面客户端打包后无法启动（服务端改为内嵌启动，不再依赖外部进程）
+- 修复托盘图标缺失导致应用启动崩溃
+- 修复设置密码后网页版整页失效（认证与配置加载流程）
+- 修复密码模式下文件下载链接失效（支持 token 鉴权）
+- 修复文件名含引号等特殊字符导致文件列表渲染崩溃
+- 修复仓库根目录被静态暴露（config.json 明文密码、uploads 可被直接下载）
+- 修复下载/删除接口路径穿越风险
+- 修复构建脚本依赖缺失（移除 sharp）
+- 修复 PWA 图标缺失无法安装
+- 修复 `release/` 下载链接 404，下载统一指向 GitHub Releases
+
+**✨ 新增：**
+- 三平台自动构建发布（Windows/macOS/Linux，GitHub Actions）
+- 桌面端数据目录改为用户目录，持久化配置与文件
+- 单实例运行、开机自启开关、端口冲突自动避让
+- macOS 同时支持 Apple 芯片与 Intel 芯片
 
 ### v1.0.0 (2026-01-01)
 
