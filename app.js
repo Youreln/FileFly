@@ -10,6 +10,7 @@ class FileFly {
         this.uploadQueue = [];
         this.isUploading = false;
         this.config = {};
+        this.fileList = [];
         
         this.init();
     }
@@ -81,6 +82,26 @@ class FileFly {
         document.getElementById('downloadSelectedBtn').addEventListener('click', () => this.downloadSelected());
         document.getElementById('clearBtn').addEventListener('click', () => this.clearAllFiles());
         
+        // 文件列表事件委托：不把文件名拼进内联事件，避免特殊字符破坏渲染/脚本
+        document.getElementById('filesList').addEventListener('click', (e) => {
+            const item = e.target.closest('.file-item');
+            if (!item) return;
+            const idx = parseInt(item.dataset.idx, 10);
+            const file = this.fileList[idx];
+            if (!file) return;
+            
+            if (e.target.closest('.file-action-btn.download')) {
+                this.downloadFile(file.name);
+                return;
+            }
+            if (e.target.closest('.file-action-btn.delete')) {
+                this.deleteFile(file.name);
+                return;
+            }
+            if (e.target.closest('.file-actions')) return;
+            this.toggleFileSelect(file.name, item);
+        });
+        
         document.getElementById('passwordSubmit').addEventListener('click', () => this.submitPassword());
         document.getElementById('passwordInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.submitPassword();
@@ -149,7 +170,16 @@ class FileFly {
         }
         headers['Content-Type'] = headers['Content-Type'] || 'application/json';
         
-        return fetch(url, { ...options, headers });
+        const res = await fetch(url, { ...options, headers });
+        
+        // 密码失效/未认证时，重新弹出密码框
+        if (res.status === 401 && !url.includes('/api/verify') && !url.includes('/api/config')) {
+            this.authToken = '';
+            localStorage.removeItem('filefly_token');
+            this.showPasswordModal();
+        }
+        
+        return res;
     }
     
     async loadConnectionInfo() {
@@ -170,9 +200,17 @@ class FileFly {
                 document.getElementById('lanAddress').textContent = data.addresses[0];
                 
                 const addressList = document.getElementById('addressList');
-                addressList.innerHTML = data.addresses.map(addr => 
-                    `<li><i class="fas fa-link"></i> <code onclick="fileFly.copyToClipboard('${addr}')">${addr}</code></li>`
+                addressList.innerHTML = data.addresses.map((addr, idx) => 
+                    `<li><i class="fas fa-link"></i> <code data-idx="${idx}">${addr}</code></li>`
                 ).join('');
+                
+                // 点击复制地址
+                addressList.onclick = (e) => {
+                    const code = e.target.closest('code');
+                    if (!code) return;
+                    const ip = data.addresses[parseInt(code.dataset.idx, 10)];
+                    if (ip) this.copyToClipboard(ip);
+                };
                 
                 if (data.addresses.length > 1) {
                     document.getElementById('allAddresses').classList.remove('hidden');
@@ -198,6 +236,8 @@ class FileFly {
         const countEl = document.getElementById('fileCount');
         const sizeEl = document.getElementById('totalSize');
         
+        this.fileList = files;
+        
         countEl.textContent = files.length;
         
         let totalSize = 0;
@@ -205,6 +245,8 @@ class FileFly {
         sizeEl.textContent = this.formatSize(totalSize);
         
         if (files.length === 0) {
+            this.selectedFiles.clear();
+            this.updateSelectedCount();
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-inbox fa-3x"></i>
@@ -215,9 +257,8 @@ class FileFly {
             return;
         }
         
-        container.innerHTML = files.map(file => `
-            <div class="file-item ${this.selectedFiles.has(file.name) ? 'selected' : ''}" 
-                 data-name="${this.escapeHtml(file.name)}" onclick="fileFly.toggleFileSelect('${this.escapeHtml(file.name)}', event)">
+        container.innerHTML = files.map((file, idx) => `
+            <div class="file-item ${this.selectedFiles.has(file.name) ? 'selected' : ''}" data-idx="${idx}">
                 <div class="file-checkbox">
                     <i class="fas fa-check"></i>
                 </div>
@@ -225,17 +266,17 @@ class FileFly {
                     <i class="fas ${file.icon}"></i>
                 </div>
                 <div class="file-info">
-                    <div class="file-name" title="${this.escapeHtml(file.name)}">${this.escapeHtml(file.name)}</div>
+                    <div class="file-name" title="${this.escapeAttr(file.name)}">${this.escapeHtml(file.name)}</div>
                     <div class="file-meta">
                         <span>${file.sizeFormatted}</span>
                         <span>${file.uploadTimeFormatted}</span>
                     </div>
                 </div>
-                <div class="file-actions" onclick="event.stopPropagation()">
-                    <button class="file-action-btn" onclick="fileFly.downloadFile('${this.escapeHtml(file.name)}')" title="下载">
+                <div class="file-actions">
+                    <button class="file-action-btn download" title="下载">
                         <i class="fas fa-download"></i>
                     </button>
-                    <button class="file-action-btn delete" onclick="fileFly.deleteFile('${this.escapeHtml(file.name)}')" title="删除">
+                    <button class="file-action-btn delete" title="删除">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -245,16 +286,13 @@ class FileFly {
         this.updateSelectedCount();
     }
     
-    toggleFileSelect(filename, event) {
-        if (event.target.closest('.file-actions')) return;
-        
+    toggleFileSelect(filename, item) {
         if (this.selectedFiles.has(filename)) {
             this.selectedFiles.delete(filename);
         } else {
             this.selectedFiles.add(filename);
         }
         
-        const item = document.querySelector(`.file-item[data-name="${filename}"]`);
         if (item) {
             item.classList.toggle('selected');
         }
@@ -264,15 +302,16 @@ class FileFly {
     
     toggleSelectAll() {
         const items = document.querySelectorAll('.file-item');
-        const allSelected = this.selectedFiles.size === items.length;
+        const allSelected = this.fileList.length > 0 && this.selectedFiles.size === this.fileList.length;
         
-        items.forEach(item => {
-            const name = item.dataset.name;
+        items.forEach((item, idx) => {
+            const file = this.fileList[idx];
+            if (!file) return;
             if (allSelected) {
-                this.selectedFiles.delete(name);
+                this.selectedFiles.delete(file.name);
                 item.classList.remove('selected');
             } else {
-                this.selectedFiles.add(name);
+                this.selectedFiles.add(file.name);
                 item.classList.add('selected');
             }
         });
@@ -625,6 +664,12 @@ class FileFly {
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
+    }
+    
+    escapeAttr(str) {
+        return this.escapeHtml(str)
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 }
 
