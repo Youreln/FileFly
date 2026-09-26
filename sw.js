@@ -3,14 +3,22 @@
  * PWA 离线支持
  */
 
-const CACHE_NAME = 'filefly-v1.0.0';
+const CACHE_NAME = 'filefly-v1.1.0';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/style.css',
     '/app.js',
     '/manifest.json',
-    '/settings.html'
+    '/settings.html',
+    '/icons/icon-72.png',
+    '/icons/icon-96.png',
+    '/icons/icon-128.png',
+    '/icons/icon-144.png',
+    '/icons/icon-152.png',
+    '/icons/icon-192.png',
+    '/icons/icon-384.png',
+    '/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
