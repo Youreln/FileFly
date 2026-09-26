@@ -123,6 +123,7 @@ function getFilesList(dir) {
         const fileList = [];
         
         files.forEach(filename => {
+            if (filename === '.gitkeep') return;
             const filepath = path.join(dir, filename);
             try {
                 const stat = fs.statSync(filepath);
@@ -210,6 +211,7 @@ function clearAllFiles(dir) {
         let count = 0;
         
         files.forEach(filename => {
+            if (filename === '.gitkeep') return;
             const filepath = path.join(dir, filename);
             try {
                 const stat = fs.statSync(filepath);
