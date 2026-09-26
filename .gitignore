@@ -29,5 +29,6 @@ Thumbs.db
 # Electron
 out/
 
-# PWA icons (generated)
+# PWA icons (generated at build time, committed copy kept)
 public/icons/
+public/assets/
