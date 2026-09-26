@@ -1,49 +1,81 @@
 /**
- * 构建准备脚本
+ * 飞传 FileFly - 构建准备脚本
+ * 作者: Youreln
+ *
+ * v1.1.0 重写：
+ *  - 移除对 sharp 的依赖（原脚本因缺少该依赖直接崩溃）
+ *  - 校验应用图标资产存在（electron-builder 打包必需）
+ *  - 将根目录前端文件同步到 public/，保持仓库两处一致
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const rootDir = path.join(__dirname, '..');
+const assetsDir = path.join(rootDir, 'assets');
+const publicDir = path.join(rootDir, 'public');
+
+// 需同步到 public/ 的前端文件
+const FRONTEND_FILES = [
+    'index.html',
+    'settings.html',
+    'style.css',
+    'app.js',
+    'manifest.json',
+    'sw.js'
+];
+
+function ensureDir(dir) {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+}
+
+function copyDir(src, dest) {
+    if (!fs.existsSync(src)) return;
+    ensureDir(dest);
+    fs.readdirSync(src).forEach(entry => {
+        const s = path.join(src, entry);
+        const d = path.join(dest, entry);
+        const stat = fs.statSync(s);
+        if (stat.isDirectory()) {
+            copyDir(s, d);
+        } else {
+            fs.copyFileSync(s, d);
+        }
+    });
+}
 
 function prepare() {
-    console.log('准备构建...');
-    
-    const assetsDir = path.join(rootDir, 'assets');
-    if (!fs.existsSync(assetsDir)) {
-        fs.mkdirSync(assetsDir, { recursive: true });
+    console.log('[build-prepare] 准备构建...');
+
+    // 1. 校验图标资产
+    const iconPng = path.join(assetsDir, 'icon.png');
+    if (!fs.existsSync(iconPng)) {
+        console.error('[build-prepare] 缺少 assets/icon.png，请先从仓库恢复图标后再构建');
+        process.exit(1);
     }
-    
-    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1"/>
-      <stop offset="100%" style="stop-color:#06b6d4"/>
-    </linearGradient>
-  </defs>
-  <rect width="256" height="256" rx="48" fill="url(#grad)"/>
-  <g fill="white">
-    <path d="M128 48c-44.183 0-80 35.817-80 80s35.817 80 80 80 80-35.817 80-80-35.817-80-80-80zm0 144c-35.346 0-64-28.654-64-64s28.654-64 64-64 64 28.654 64 64-28.654 64-64 64z" opacity="0.3"/>
-    <path d="M180 128l-40-40v28H96v24h44v28l40-40z"/>
-    <circle cx="128" cy="128" r="16"/>
-  </g>
-</svg>`;
-    
-    const iconPngPath = path.join(assetsDir, 'icon.png');
-    if (!fs.existsSync(iconPngPath)) {
-        const sharp = require('sharp');
-        if (sharp) {
-            sharp(Buffer.from(iconSvg))
-                .resize(256, 256)
-                .png()
-                .toFile(iconPngPath)
-                .then(() => console.log('图标已生成'))
-                .catch(err => console.log('图标生成失败:', err.message));
+    console.log('[build-prepare] 图标资产已就绪:', iconPng);
+
+    // 2. 同步前端文件到 public/
+    ensureDir(publicDir);
+    FRONTEND_FILES.forEach(name => {
+        const src = path.join(rootDir, name);
+        if (fs.existsSync(src)) {
+            fs.copyFileSync(src, path.join(publicDir, name));
         }
+    });
+    copyDir(path.join(rootDir, 'icons'), path.join(publicDir, 'icons'));
+    copyDir(assetsDir, path.join(publicDir, 'assets'));
+
+    // 3. 清理旧的构建产物，避免混淆
+    const releaseDir = path.join(rootDir, 'release');
+    if (fs.existsSync(releaseDir)) {
+        fs.rmSync(releaseDir, { recursive: true, force: true });
+        console.log('[build-prepare] 已清理旧构建产物 release/');
     }
-    
-    console.log('构建准备完成');
+
+    console.log('[build-prepare] 构建准备完成');
 }
 
 prepare();
