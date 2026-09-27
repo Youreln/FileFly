@@ -1441,3 +1441,16 @@ body {
 @media (max-width: 600px) {
     .download-grid { grid-template-columns: 1fr; }
 }
+
+/* 落地页模式：静态托管（GitHub Pages）下隐藏依赖服务端的区块 */
+.landing-mode .connection-section,
+.landing-mode .upload-section,
+.landing-mode .files-section,
+.landing-mode .settings-btn,
+.landing-mode .refresh-btn {
+    display: none !important;
+}
+
+.landing-mode .main-content {
+    max-width: 1100px;
+}

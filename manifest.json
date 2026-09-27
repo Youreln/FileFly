@@ -2,7 +2,8 @@
   "name": "飞传 FileFly",
   "short_name": "FileFly",
   "description": "局域网高速文件传输工具",
-  "start_url": "/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#6366f1",
@@ -64,14 +65,14 @@
       "name": "上传文件",
       "short_name": "上传",
       "description": "快速上传文件",
-      "url": "/#upload",
+      "url": "./#upload",
       "icons": [{ "src": "icons/upload.png", "sizes": "96x96" }]
     },
     {
       "name": "设置",
       "short_name": "设置",
       "description": "打开设置页面",
-      "url": "/settings",
+      "url": "./settings",
       "icons": [{ "src": "icons/settings.png", "sizes": "96x96" }]
     }
   ],

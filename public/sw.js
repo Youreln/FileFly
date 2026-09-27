@@ -3,22 +3,22 @@
  * PWA 离线支持
  */
 
-const CACHE_NAME = 'filefly-v1.1.0';
+const CACHE_NAME = 'filefly-v1.1.1';
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/app.js',
-    '/manifest.json',
-    '/settings.html',
-    '/icons/icon-72.png',
-    '/icons/icon-96.png',
-    '/icons/icon-128.png',
-    '/icons/icon-144.png',
-    '/icons/icon-152.png',
-    '/icons/icon-192.png',
-    '/icons/icon-384.png',
-    '/icons/icon-512.png'
+    './',
+    './index.html',
+    './style.css',
+    './app.js',
+    './manifest.json',
+    './settings.html',
+    './icons/icon-72.png',
+    './icons/icon-96.png',
+    './icons/icon-128.png',
+    './icons/icon-144.png',
+    './icons/icon-152.png',
+    './icons/icon-192.png',
+    './icons/icon-384.png',
+    './icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -47,11 +47,11 @@ self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
     
-    if (url.pathname.startsWith('/api/')) {
+    if (url.pathname.includes('/api/')) {
         return;
     }
     
-    if (url.pathname.startsWith('/uploads/')) {
+    if (url.pathname.includes('/uploads/')) {
         return;
     }
     

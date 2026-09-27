@@ -19,10 +19,37 @@ class FileFly {
         this.createParticles();
         this.initTheme();
         this.bindEvents();
+        // 探测服务端是否可用：GitHub Pages 等静态托管下 API 不可用，
+        // 页面切换为"落地页模式"（仅展示下载信息），不再发起 API 请求
+        const serverOk = await this.probeServer();
+        if (!serverOk) {
+            this.enterLandingMode();
+            return;
+        }
         await this.loadConfig();
         await this.checkAuth();
         await this.loadConnectionInfo();
         await this.loadFiles();
+    }
+
+    async probeServer() {
+        try {
+            const res = await this.fetch('/api/info');
+            return res.ok;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    enterLandingMode() {
+        document.body.classList.add('landing-mode');
+        // 落地页模式下隐藏"网页版功能受限说明"的关闭按钮，避免下载区被关闭后页面空白
+        const notice = document.getElementById('downloadNotice');
+        if (notice) {
+            const closeBtn = notice.querySelector('.notice-close');
+            if (closeBtn) closeBtn.style.display = 'none';
+        }
+        console.log('[FileFly] 静态托管模式：仅展示下载信息');
     }
     
     createParticles() {
