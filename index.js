@@ -122,12 +122,14 @@ function createApp() {
 
     app.use('/icons', express.static(path.join(publicDir, 'icons')));
     app.use('/assets', express.static(path.join(publicDir, 'assets')));
+    app.use('/vendor', express.static(path.join(publicDir, 'vendor')));
     app.get('/', staticFile('index.html'));
     app.get('/index.html', staticFile('index.html'));
     app.get('/settings', staticFile('settings.html'));
     app.get('/settings.html', staticFile('settings.html'));
     app.get('/style.css', staticFile('style.css'));
     app.get('/app.js', staticFile('app.js'));
+    app.get('/p2p.js', staticFile('p2p.js'));
     app.get('/manifest.json', staticFile('manifest.json'));
     app.get('/sw.js', staticFile('sw.js'));
     app.get('/favicon.ico', staticFile('assets/icon.png'));

@@ -3,14 +3,17 @@
  * PWA 离线支持
  */
 
-const CACHE_NAME = 'filefly-v1.1.1';
+const CACHE_NAME = 'filefly-v1.1.3';
 const STATIC_ASSETS = [
     './',
     './index.html',
     './style.css',
     './app.js',
+    './p2p.js',
     './manifest.json',
     './settings.html',
+    './vendor/peerjs.min.js',
+    './vendor/qrcode.min.js',
     './icons/icon-72.png',
     './icons/icon-96.png',
     './icons/icon-128.png',

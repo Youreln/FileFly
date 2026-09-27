@@ -52,7 +52,7 @@
             </div>
             <div class="notice-content">
                 <h3>下载客户端 <span class="version-badge">v1.1.0</span></h3>
-                <p>网页版可完成全部传输功能；安装桌面端获得后台运行、系统托盘、开机自启体验</p>
+                <p>网页即开即用，在线互传无需安装；安装桌面端获得后台运行、系统托盘、开机自启体验</p>
                 <div class="download-grid">
                     <div class="download-card">
                         <div class="download-icon windows"><i class="fab fa-windows"></i></div>
@@ -103,6 +103,44 @@
             <button class="notice-close" id="closeNotice" title="关闭">
                 <i class="fas fa-times"></i>
             </button>
+        </section>
+
+        <section class="p2p-section card animate-fade-in" id="p2pSection" style="animation-delay: 0.05s;">
+            <h2><i class="fas fa-bolt"></i> 在线互传 <span class="p2p-badge">无需安装</span></h2>
+            <p class="p2p-intro">打开本页即可与其他设备互传文件，无需下载任何客户端。把下方链接或二维码发给对方，对方打开后自动建立点对点连接。</p>
+            <div class="p2p-layout">
+                <div class="p2p-connect">
+                    <div class="p2p-status" id="p2pStatus"><span class="p2p-dot connecting"></span> 正在连接...</div>
+                    <label class="p2p-label" for="p2pLink">我的分享链接</label>
+                    <div class="p2p-link-row">
+                        <input id="p2pLink" type="text" readonly placeholder="生成中...">
+                        <button id="p2pCopy" class="p2p-btn"><i class="fas fa-copy"></i> 复制</button>
+                    </div>
+                    <div class="p2p-qr" id="p2pQr"></div>
+                    <div class="p2p-peer-input">
+                        <input id="p2pPeerId" type="text" placeholder="或输入对方链接 / ID">
+                        <button id="p2pConnectBtn" class="p2p-btn primary"><i class="fas fa-plug"></i> 连接</button>
+                    </div>
+                </div>
+                <div class="p2p-transfer">
+                    <div class="p2p-peer-info" id="p2pPeerInfo">等待对方连接...</div>
+                    <div class="p2p-dropzone" id="p2pDropzone">
+                        <i class="fas fa-upload"></i>
+                        <p>拖拽文件到此处，或点击选择文件</p>
+                        <input type="file" id="p2pFileInput" multiple hidden>
+                    </div>
+                    <div class="p2p-lists">
+                        <div class="p2p-list-col">
+                            <div class="p2p-list-title"><i class="fas fa-arrow-up"></i> 发送</div>
+                            <div class="p2p-item-list" id="p2pSendList"></div>
+                        </div>
+                        <div class="p2p-list-col">
+                            <div class="p2p-list-title"><i class="fas fa-arrow-down"></i> 接收</div>
+                            <div class="p2p-item-list" id="p2pRecvList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section class="connection-section card animate-fade-in" style="animation-delay: 0.1s;">
@@ -233,6 +271,9 @@
         </p>
     </footer>
 
+    <script src="vendor/peerjs.min.js"></script>
+    <script src="vendor/qrcode.min.js"></script>
+    <script src="p2p.js"></script>
     <script src="app.js"></script>
     <script>
         if ('serviceWorker' in navigator) {

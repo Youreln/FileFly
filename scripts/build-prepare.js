@@ -21,6 +21,7 @@ const FRONTEND_FILES = [
     'settings.html',
     'style.css',
     'app.js',
+    'p2p.js',
     'manifest.json',
     'sw.js'
 ];
@@ -66,6 +67,7 @@ function prepare() {
         }
     });
     copyDir(path.join(rootDir, 'icons'), path.join(publicDir, 'icons'));
+    copyDir(path.join(rootDir, 'vendor'), path.join(publicDir, 'vendor'));
     copyDir(assetsDir, path.join(publicDir, 'assets'));
 
     // 3. 清理旧的构建产物，避免混淆
