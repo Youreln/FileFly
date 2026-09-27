@@ -46,8 +46,8 @@
 | Windows | 64位 | [便携版 FileFly-Portable-1.1.0-x64.exe](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Portable-1.1.0-x64.exe) |
 | macOS | Apple 芯片 (M1/M2/M3/M4) | [FileFly-1.1.0-mac-arm64.dmg](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-mac-arm64.dmg) |
 | macOS | Intel 芯片 | [FileFly-1.1.0-mac-x64.dmg](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-mac-x64.dmg) |
-| Linux | x64 | [FileFly-1.1.0-linux-x64.AppImage](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-x64.AppImage) |
-| Linux | x64 | [FileFly-1.1.0-linux-x64.deb](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-x64.deb) |
+| Linux | x64 | [FileFly-1.1.0-linux-x86_64.AppImage](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-x86_64.AppImage) |
+| Linux | x64 | [FileFly-1.1.0-linux-amd64.deb](https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-amd64.deb) |
 
 > 📌 所有版本见 [Releases 页面](https://github.com/Youreln/FileFly/releases)
 
@@ -327,10 +327,10 @@ FileFly/
 
 **A:**
 ```bash
-chmod +x FileFly-1.1.0-linux-x64.AppImage
-./FileFly-1.1.0-linux-x64.AppImage
+chmod +x FileFly-1.1.0-linux-x86_64.AppImage
+./FileFly-1.1.0-linux-x86_64.AppImage
 # 若提示缺少 FUSE：
-./FileFly-1.1.0-linux-x64.AppImage --appimage-extract-and-run
+./FileFly-1.1.0-linux-x86_64.AppImage --appimage-extract-and-run
 ```
 
 ### Q: 上传大文件失败？
