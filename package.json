@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "飞传 FileFly - 局域网高速文件传输工具",
   "main": "electron.js",
-  "author": "Youreln",
+  "author": "Youreln <youreln@users.noreply.github.com>",
   "license": "MIT",
   "homepage": "https://youreln.github.io/FileFly",
   "repository": {
