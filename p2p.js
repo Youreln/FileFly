@@ -17,7 +17,8 @@
     const el = {
         status: null, dot: null, link: null, qrBox: null,
         peerInput: null, connectBtn: null, peerInfo: null,
-        dropzone: null, fileInput: null, sendList: null, recvList: null
+        dropzone: null, fileInput: null, sendList: null, recvList: null,
+        scanModal: null, scanVideo: null, scanCanvas: null, scanStatus: null
     };
 
     let peer = null;
@@ -27,6 +28,9 @@
     const transfers = new Map(); // fileId -> 传输上下文
     let sendQueue = [];          // 待发送文件队列
     let sending = false;
+    let scanStream = null;        // 摄像头流
+    let scanRaf = 0;              // 扫码动画帧
+    let scanning = false;         // 是否正在扫码
 
     // ---------- 工具 ----------
 
@@ -485,10 +489,111 @@
         })[c]);
     }
 
+    // ---------- 扫码连接（摄像头扫描对方二维码） ----------
+
+    function openScanner() {
+        if (scanning) return;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            toast('当前环境不支持摄像头扫码（需 HTTPS 或 localhost）');
+            return;
+        }
+        if (typeof jsQR !== 'function') {
+            toast('扫码组件加载失败，请刷新页面重试');
+            return;
+        }
+        if (!peer || !myId) {
+            toast('请等待本机上线后再扫码');
+            return;
+        }
+        scanning = true;
+        el.scanModal.classList.remove('hidden');
+        setScanStatus('正在启动摄像头...');
+        navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+            audio: false
+        }).then((stream) => {
+            scanStream = stream;
+            el.scanVideo.srcObject = stream;
+            el.scanVideo.play().catch(() => { });
+            setScanStatus('请将对方设备上的二维码对准摄像头');
+            scanRaf = requestAnimationFrame(tick);
+        }).catch((err) => {
+            console.warn('[p2p] camera error:', err);
+            let msg = '摄像头启动失败';
+            if (err && err.name === 'NotAllowedError') msg = '摄像头权限被拒绝，请在浏览器设置中允许后重试';
+            else if (err && err.name === 'NotFoundError') msg = '未检测到可用摄像头';
+            else if (err && err.name === 'NotReadableError') msg = '摄像头被其他应用占用，请关闭后重试';
+            else if (err && err.name === 'SecurityError') msg = '摄像头需要 HTTPS 或 localhost 环境';
+            setScanStatus(msg);
+            closeScanner(true);
+            toast(msg);
+        });
+    }
+
+    function setScanStatus(text) {
+        if (el.scanStatus) el.scanStatus.textContent = text;
+    }
+
+    function tick() {
+        if (!scanning) return;
+        const video = el.scanVideo;
+        const canvas = el.scanCanvas;
+        if (video && canvas && video.readyState >= 2 && video.videoWidth > 0) {
+            const scale = Math.min(1, 640 / video.videoWidth);
+            const w = Math.max(2, Math.round(video.videoWidth * scale));
+            const h = Math.max(2, Math.round(video.videoHeight * scale));
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(video, 0, 0, w, h);
+            try {
+                const img = ctx.getImageData(0, 0, w, h);
+                const code = jsQR(img.data, w, h, { inversionAttempts: 'dontInvert' });
+                if (code && code.data && handleScanResult(code.data)) {
+                    return; // 识别成功并已开始连接，停止扫描
+                }
+            } catch (e) { /* 单帧解码失败忽略 */ }
+        }
+        scanRaf = requestAnimationFrame(tick);
+    }
+
+    function handleScanResult(data) {
+        const url = String(data || '').trim();
+        let id = null;
+        if (/p2p=([\w-]+)/i.test(url)) {
+            id = url.match(/p2p=([\w-]+)/i)[1];
+        } else if (/^[\w-]{8,}$/.test(url)) {
+            id = url; // 二维码内容直接是 Peer ID
+        }
+        if (!id || id === myId) return false; // 未识别或扫到自己的码，继续
+        setScanStatus('识别成功，正在连接...');
+        closeScanner(false);
+        setTimeout(() => dial(id), 200);
+        return true;
+    }
+
+    function closeScanner(keepModal) {
+        scanning = false;
+        cancelAnimationFrame(scanRaf);
+        if (scanStream) {
+            scanStream.getTracks().forEach((t) => t.stop());
+            scanStream = null;
+        }
+        if (el.scanVideo) el.scanVideo.srcObject = null;
+        if (!keepModal && el.scanModal) el.scanModal.classList.add('hidden');
+    }
+
     // ---------- 事件绑定 ----------
 
     function bindEvents() {
         $('p2pCopy').addEventListener('click', copyLink);
+
+        $('p2pScanBtn').addEventListener('click', openScanner);
+        $('p2pScanClose').addEventListener('click', () => closeScanner(false));
+        $('p2pScanCancel').addEventListener('click', () => closeScanner(false));
+        el.scanModal.addEventListener('click', (e) => {
+            if (e.target === el.scanModal) closeScanner(false);
+        });
 
         $('p2pConnectBtn').addEventListener('click', () => {
             dial(el.peerInput.value);
@@ -566,6 +671,13 @@
         el.fileInput = $('p2pFileInput');
         el.sendList = $('p2pSendList');
         el.recvList = $('p2pRecvList');
+        el.scanModal = $('p2pScanModal');
+        el.scanVideo = $('p2pScanVideo');
+        el.scanCanvas = $('p2pScanCanvas');
+        el.scanStatus = $('p2pScanStatus');
+
+        // 测试钩子：无摄像头环境下模拟扫码识别结果，验证连接链路
+        window.__fileflyScanTest = (data) => handleScanResult(data);
 
         bindEvents();
         setStatus('正在连接信令服务...', 'connecting');

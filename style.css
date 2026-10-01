@@ -1704,6 +1704,101 @@ body {
     color: #0f172a;
 }
 
+/* ===== 扫码连接弹层 ===== */
+.p2p-scan-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 6, 23, 0.78);
+    backdrop-filter: blur(4px);
+    padding: 16px;
+}
+
+.p2p-scan-modal.hidden { display: none; }
+
+.scan-modal-card {
+    width: 100%;
+    max-width: 420px;
+}
+
+.scan-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.scan-modal-header h3 { margin: 0; font-size: 1.05em; }
+
+.scan-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary, #94a3b8);
+    font-size: 1.1em;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.scan-close:hover { color: #f1f5f9; }
+
+.scan-tip {
+    color: var(--text-secondary, #94a3b8);
+    font-size: 0.85em;
+    margin: 0 0 12px;
+}
+
+.scan-viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+}
+
+.scan-viewport video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scan-frame {
+    position: absolute;
+    inset: 12%;
+    border: 2px solid rgba(34, 211, 238, 0.85);
+    border-radius: 12px;
+    box-shadow: 0 0 0 999px rgba(2, 6, 23, 0.35);
+    pointer-events: none;
+}
+
+.scan-status {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 6px 10px;
+    text-align: center;
+    background: rgba(2, 6, 23, 0.75);
+    color: #e2e8f0;
+    font-size: 0.82em;
+}
+
+.scan-modal-card > .p2p-btn {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.p2p-scan-row { margin-top: 10px; }
+
+.scan-btn {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(99, 102, 241, 0.15));
+    border-color: rgba(34, 211, 238, 0.45);
+}
+
 @media (max-width: 640px) {
     .p2p-connect { flex-basis: 100%; }
     .p2p-transfer { min-width: 100%; }

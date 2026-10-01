@@ -117,6 +117,7 @@
                         <button id="p2pCopy" class="p2p-btn"><i class="fas fa-copy"></i> 复制</button>
                     </div>
                     <div class="p2p-qr" id="p2pQr"></div>
+                    <button id="p2pScanBtn" class="p2p-btn scan-btn"><i class="fas fa-camera"></i> 扫对方二维码</button>
                     <div class="p2p-peer-input">
                         <input id="p2pPeerId" type="text" placeholder="或输入对方链接 / ID">
                         <button id="p2pConnectBtn" class="p2p-btn primary"><i class="fas fa-plug"></i> 连接</button>
@@ -261,6 +262,23 @@
         <button id="pwaDismiss"><i class="fas fa-times"></i></button>
     </div>
 
+    <div class="p2p-scan-modal hidden" id="p2pScanModal">
+        <div class="scan-modal-card card">
+            <div class="scan-modal-header">
+                <h3><i class="fas fa-camera"></i> 扫描对方二维码</h3>
+                <button id="p2pScanClose" class="scan-close" title="关闭"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="scan-tip">请将对方设备上展示的二维码对准摄像头，识别后自动连接</p>
+            <div class="scan-viewport">
+                <video id="p2pScanVideo" autoplay playsinline muted></video>
+                <canvas id="p2pScanCanvas" class="hidden" width="480" height="360"></canvas>
+                <div class="scan-frame"></div>
+                <div class="scan-status" id="p2pScanStatus">正在启动摄像头...</div>
+            </div>
+            <button id="p2pScanCancel" class="p2p-btn">取消</button>
+        </div>
+    </div>
+
     <div class="toast-container" id="toastContainer"></div>
 
     <footer class="footer">
@@ -273,6 +291,7 @@
 
     <script src="vendor/peerjs.min.js"></script>
     <script src="vendor/qrcode.min.js"></script>
+    <script src="vendor/jsqr.js"></script>
     <script src="p2p.js"></script>
     <script src="app.js"></script>
     <script>
