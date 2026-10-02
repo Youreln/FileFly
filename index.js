@@ -123,9 +123,12 @@ function createApp() {
     app.use('/icons', express.static(path.join(publicDir, 'icons')));
     app.use('/assets', express.static(path.join(publicDir, 'assets')));
     app.use('/vendor', express.static(path.join(publicDir, 'vendor')));
+    app.use('/android', express.static(path.join(publicDir, 'android')));
     app.get('/', staticFile('index.html'));
     app.get('/index.html', staticFile('index.html'));
     app.get('/settings', staticFile('settings.html'));
+    app.get('/download', staticFile('download.html'));
+    app.get('/download.html', staticFile('download.html'));
     app.get('/settings.html', staticFile('settings.html'));
     app.get('/style.css', staticFile('style.css'));
     app.get('/app.js', staticFile('app.js'));

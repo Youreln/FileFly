@@ -46,65 +46,6 @@
     </header>
 
     <main class="main-content">
-        <section class="download-notice card animate-fade-in" id="downloadNotice">
-            <div class="notice-icon">
-                <i class="fas fa-download"></i>
-            </div>
-            <div class="notice-content">
-                <h3>下载客户端 <span class="version-badge">v1.1.0</span></h3>
-                <p>网页即开即用，在线互传无需安装；安装桌面端获得后台运行、系统托盘、开机自启体验</p>
-                <div class="download-grid">
-                    <div class="download-card">
-                        <div class="download-icon windows"><i class="fab fa-windows"></i></div>
-                        <h4>Windows</h4>
-                        <p>Windows 7/8/10/11</p>
-                        <div class="download-links">
-                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Setup-1.1.0-x64.exe" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> 安装包 (64位)</a>
-                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Setup-1.1.0-ia32.exe" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> 安装包 (32位)</a>
-                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Portable-1.1.0-x64.exe" target="_blank" class="dl-link"><i class="fas fa-portrait"></i> 便携版 (免安装)</a>
-                        </div>
-                    </div>
-                    <div class="download-card">
-                        <div class="download-icon mac"><i class="fab fa-apple"></i></div>
-                        <h4>macOS</h4>
-                        <p>macOS 10.13+</p>
-                        <div class="download-links">
-                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-mac-arm64.dmg" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> Apple 芯片 DMG</a>
-                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-mac-x64.dmg" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> Intel 芯片 DMG</a>
-                        </div>
-                    </div>
-                    <div class="download-card">
-                        <div class="download-icon linux"><i class="fab fa-linux"></i></div>
-                        <h4>Linux</h4>
-                        <p>Ubuntu/Debian/Fedora</p>
-                        <div class="download-links">
-                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-x86_64.AppImage" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> AppImage</a>
-                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-amd64.deb" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> DEB 包</a>
-                        </div>
-                    </div>
-                    <div class="download-card">
-                        <div class="download-icon mobile"><i class="fas fa-mobile-alt"></i></div>
-                        <h4>移动端 PWA</h4>
-                        <p>Android / iOS</p>
-                        <div class="download-links">
-                            <span class="dl-hint">① 电脑运行 FileFly 客户端<br>② 手机扫码进入<br>③ 浏览器菜单 → 添加到主屏幕<br>即可像 App 一样收发文件</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="download-buttons">
-                    <a href="https://github.com/Youreln/FileFly/releases" target="_blank" class="download-btn primary">
-                        <i class="fas fa-download"></i> 查看全部版本
-                    </a>
-                    <a href="https://github.com/Youreln/FileFly" target="_blank" class="download-btn secondary">
-                        <i class="fab fa-github"></i> 查看源码
-                    </a>
-                </div>
-            </div>
-            <button class="notice-close" id="closeNotice" title="关闭">
-                <i class="fas fa-times"></i>
-            </button>
-        </section>
-
         <section class="p2p-section card animate-fade-in" id="p2pSection" style="animation-delay: 0.05s;">
             <h2><i class="fas fa-bolt"></i> 在线互传 <span class="p2p-badge">无需安装</span></h2>
             <p class="p2p-intro">打开本页即可与其他设备互传文件，无需下载任何客户端。把下方链接或二维码发给对方，对方打开后自动建立点对点连接。</p>
@@ -143,6 +84,25 @@
                 </div>
             </div>
         </section>
+        <section class="download-banner card animate-fade-in" id="downloadNotice">
+            <div class="notice-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <div class="notice-content">
+                <h3>下载客户端 <span class="version-badge">v1.1.0</span></h3>
+                <p>网页在线互传无需安装即可使用；Windows / macOS / Linux / Android 客户端与 PWA 安装指引见 <a href="download.html" class="banner-link">下载中心</a></p>
+                <div class="download-buttons">
+                    <a href="download.html" class="download-btn primary">
+                        <i class="fas fa-download"></i> 进入下载中心
+                    </a>
+                </div>
+            </div>
+            <button class="notice-close" id="closeNotice" title="关闭">
+                <i class="fas fa-times"></i>
+            </button>
+        </section>
+
+        
 
         <section class="connection-section card animate-fade-in" style="animation-delay: 0.1s;">
             <h2><i class="fas fa-wifi"></i> 连接信息</h2>
@@ -275,7 +235,10 @@
                 <div class="scan-frame"></div>
                 <div class="scan-status" id="p2pScanStatus">正在启动摄像头...</div>
             </div>
-            <button id="p2pScanCancel" class="p2p-btn">取消</button>
+            <div class="scan-actions">
+                <button id="p2pScanSwitch" class="p2p-btn hidden"><i class="fas fa-sync-alt"></i> 切换镜头</button>
+                <button id="p2pScanCancel" class="p2p-btn">取消</button>
+            </div>
         </div>
     </div>
 

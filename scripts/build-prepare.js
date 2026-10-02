@@ -14,11 +14,13 @@ const path = require('path');
 const rootDir = path.join(__dirname, '..');
 const assetsDir = path.join(rootDir, 'assets');
 const publicDir = path.join(rootDir, 'public');
+const docsDir = path.join(rootDir, 'docs'); // GitHub Pages 部署目录
 
 // 需同步到 public/ 的前端文件
 const FRONTEND_FILES = [
     'index.html',
     'settings.html',
+    'download.html',
     'style.css',
     'app.js',
     'p2p.js',
@@ -69,6 +71,27 @@ function prepare() {
     copyDir(path.join(rootDir, 'icons'), path.join(publicDir, 'icons'));
     copyDir(path.join(rootDir, 'vendor'), path.join(publicDir, 'vendor'));
     copyDir(assetsDir, path.join(publicDir, 'assets'));
+
+    // 3. 复制 Android APK 到 public/（供本地服务下载）
+    if (fs.existsSync(path.join(rootDir, 'android'))) {
+        copyDir(path.join(rootDir, 'android'), path.join(publicDir, 'android'));
+    }
+
+    // 4. 同步全部前端文件与资源到 docs/（GitHub Pages 部署目录）
+    ensureDir(docsDir);
+    FRONTEND_FILES.forEach(name => {
+        const src = path.join(rootDir, name);
+        if (fs.existsSync(src)) {
+            fs.copyFileSync(src, path.join(docsDir, name));
+        }
+    });
+    copyDir(path.join(rootDir, 'icons'), path.join(docsDir, 'icons'));
+    copyDir(path.join(rootDir, 'vendor'), path.join(docsDir, 'vendor'));
+    copyDir(assetsDir, path.join(docsDir, 'assets'));
+    if (fs.existsSync(path.join(rootDir, 'android'))) {
+        copyDir(path.join(rootDir, 'android'), path.join(docsDir, 'android'));
+    }
+    console.log('[build-prepare] 已同步到 docs/');
 
     // 3. 清理旧的构建产物，避免混淆
     const releaseDir = path.join(rootDir, 'release');

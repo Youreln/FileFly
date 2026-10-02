@@ -508,16 +508,67 @@
         scanning = true;
         el.scanModal.classList.remove('hidden');
         setScanStatus('正在启动摄像头...');
-        navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-            audio: false
-        }).then((stream) => {
+        refreshCameras(true).then(() => {
+            updateScanSwitch();
+            startCamera();
+        }).catch(() => startCamera());
+    }
+
+    let cameras = [];   // 可用视频输入设备
+    let camIdx = 0;     // 当前使用的镜头索引
+
+    async function refreshCameras(resetIndex) {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+        try {
+            const devs = await navigator.mediaDevices.enumerateDevices();
+            cameras = devs.filter((d) => d.kind === 'videoinput');
+            if (resetIndex || camIdx >= cameras.length) {
+                camIdx = 0;
+                // 优先后置主摄：避免部分手机默认选中长焦/微距镜头（近距扫码无法对焦）
+                const prefer = cameras.findIndex((c) => {
+                    const label = (c.label || '').toLowerCase();
+                    return /back|rear|后置/.test(label) && !/tele|zoom|3x|2x|长焦|macro|微距/.test(label);
+                });
+                if (prefer > 0) camIdx = prefer;
+            }
+        } catch (e) {
+            cameras = [];
+        }
+    }
+
+    function updateScanSwitch() {
+        const btn = $('p2pScanSwitch');
+        if (!btn) return;
+        if (cameras.length > 1) {
+            btn.classList.remove('hidden');
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> 切换镜头 (' + (camIdx + 1) + '/' + cameras.length + ')';
+        } else {
+            btn.classList.add('hidden');
+        }
+    }
+
+    async function startCamera() {
+        if (!scanning) return;
+        setScanStatus('正在启动摄像头...');
+        const constraints = {
+            audio: false,
+            // facingMode 用 ideal（而非强制 environment）：系统优先选主摄，避免长焦镜头
+            video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        };
+        if (cameras.length > 0) {
+            const cam = cameras[camIdx % cameras.length];
+            if (cam && cam.deviceId) {
+                constraints.video = { deviceId: { exact: cam.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } };
+            }
+        }
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
             scanStream = stream;
             el.scanVideo.srcObject = stream;
             el.scanVideo.play().catch(() => { });
             setScanStatus('请将对方设备上的二维码对准摄像头');
             scanRaf = requestAnimationFrame(tick);
-        }).catch((err) => {
+        } catch (err) {
             console.warn('[p2p] camera error:', err);
             let msg = '摄像头启动失败';
             if (err && err.name === 'NotAllowedError') msg = '摄像头权限被拒绝，请在浏览器设置中允许后重试';
@@ -527,7 +578,19 @@
             setScanStatus(msg);
             closeScanner(true);
             toast(msg);
-        });
+        }
+    }
+
+    function switchCamera() {
+        if (cameras.length < 2) return;
+        camIdx = (camIdx + 1) % cameras.length;
+        // 停止当前摄像头流，换下一个镜头
+        scanning = false;
+        cancelAnimationFrame(scanRaf);
+        if (scanStream) { scanStream.getTracks().forEach((t) => t.stop()); scanStream = null; }
+        if (el.scanVideo) el.scanVideo.srcObject = null;
+        scanning = true;
+        startCamera();
     }
 
     function setScanStatus(text) {
@@ -591,6 +654,7 @@
         $('p2pScanBtn').addEventListener('click', openScanner);
         $('p2pScanClose').addEventListener('click', () => closeScanner(false));
         $('p2pScanCancel').addEventListener('click', () => closeScanner(false));
+        $('p2pScanSwitch').addEventListener('click', switchCamera);
         el.scanModal.addEventListener('click', (e) => {
             if (e.target === el.scanModal) closeScanner(false);
         });

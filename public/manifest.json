@@ -74,6 +74,13 @@
       "description": "打开设置页面",
       "url": "./settings",
       "icons": [{ "src": "icons/settings.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "下载客户端",
+      "short_name": "下载",
+      "description": "下载 Windows / macOS / Linux / Android 客户端",
+      "url": "./download",
+      "icons": [{ "src": "icons/download.png", "sizes": "96x96" }]
     }
   ],
   "related_applications": [],

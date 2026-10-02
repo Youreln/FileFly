@@ -51,6 +51,15 @@
 
 ## 📥 客户端下载
 
+> 完整下载中心（Windows / macOS / Linux / Android / PWA）：**https://youreln.github.io/FileFly/download.html**
+
+### 安卓版（APK）
+
+- **[FileFly-Android-v1.1.0.apk](android/FileFly-Android-v1.1.0.apk)** - 安卓 8.0+ 直接下载安装，打开即用（WebView 加载在线互传网页，支持摄像头扫码连接）
+
+### 桌面端
+
+
 ### 桌面端（v1.1.0）
 
 | 平台 | 架构 | 下载 |

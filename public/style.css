@@ -1803,3 +1803,36 @@ body {
     .p2p-connect { flex-basis: 100%; }
     .p2p-transfer { min-width: 100%; }
 }
+
+/* ===== 下载横条（主页顶部下载入口） ===== */
+.download-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 211, 238, 0.06));
+}
+
+.download-banner .notice-content { flex: 1; }
+.download-banner .notice-content h3 { margin: 0 0 4px; }
+.download-banner .notice-content p { margin: 0; color: var(--text-secondary, #94a3b8); font-size: 0.92em; }
+.banner-link { color: #22d3ee; font-weight: 600; }
+.download-banner .download-buttons { margin-top: 10px; }
+.download-banner .download-buttons .download-btn { display: inline-block; padding: 9px 22px; border-radius: 10px; text-decoration: none; }
+.download-banner .download-btn.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+
+/* ===== 下载中心独立页 ===== */
+.download-page { max-width: 1080px; }
+.download-page .download-notice { border: 1px solid rgba(99, 102, 241, 0.35); }
+.download-page .download-notice .notice-close { display: none; }
+.download-page .dl-hint { display: block; font-size: 0.8em; color: var(--text-secondary, #94a3b8); line-height: 1.7; }
+.download-page .dl-link { display: block; margin-bottom: 6px; }
+.download-page .back-link { display: inline-block; margin-bottom: 18px; color: #22d3ee; text-decoration: none; font-size: 0.92em; }
+.download-page .back-link:hover { text-decoration: underline; }
+
+/* ===== 扫码弹层操作区 ===== */
+.scan-actions { display: flex; gap: 8px; margin-top: 12px; }
+.scan-actions .p2p-btn { flex: 1; margin-top: 0; }
+
+
+.download-icon.android { background: linear-gradient(135deg, #16a34a, #22c55e); }

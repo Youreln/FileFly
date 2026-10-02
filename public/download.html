@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>下载中心 - 飞传 FileFly</title>
+    <meta name="description" content="飞传 FileFly 客户端下载中心 - Windows / macOS / Linux / Android">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="飞传 FileFly">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+    <div class="gradient-bg"></div>
+
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-paper-plane"></i>
+            <span>飞传 FileFly</span>
+        </div>
+        <div class="header-actions">
+            <a href="./" class="download-btn-header" title="返回在线互传">
+                <i class="fas fa-bolt"></i>
+                <span>在线互传</span>
+            </a>
+            <a href="https://github.com/Youreln/FileFly" target="_blank" class="github-btn" title="GitHub 开源项目">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content download-page">
+        <a href="./" class="back-link"><i class="fas fa-arrow-left"></i> 返回主页（网页在线互传）</a>
+        <section class="download-notice card animate-fade-in" id="downloadNotice">
+            <div class="notice-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <div class="notice-content">
+                <h3>下载客户端 <span class="version-badge">v1.1.0</span></h3>
+                <p>网页在线互传无需安装即可使用；以下客户端面向需要后台运行、托盘常驻、开机自启与原生体验的用户。</p>
+                <div class="download-grid">
+                    <div class="download-card">
+                        <div class="download-icon android"><i class="fab fa-android"></i></div>
+                        <h4>Android</h4>
+                        <p>安卓 8.0+ · APK 安装包</p>
+                        <div class="download-links">
+                            <a href="android/FileFly-Android-v1.1.0.apk" class="dl-link"><i class="fas fa-file-archive"></i> 安卓版 APK（直接下载安装）</a>
+                            <span class="dl-hint">安装后打开即是网页在线互传<br>如提示"未知来源"，允许安装即可</span>
+                        </div>
+                    </div>
+                    <div class="download-card">
+                        <div class="download-icon windows"><i class="fab fa-windows"></i></div>
+                        <h4>Windows</h4>
+                        <p>Windows 7/8/10/11</p>
+                        <div class="download-links">
+                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Setup-1.1.0-x64.exe" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> 安装包 (64位)</a>
+                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Setup-1.1.0-ia32.exe" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> 安装包 (32位)</a>
+                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-Portable-1.1.0-x64.exe" target="_blank" class="dl-link"><i class="fas fa-portrait"></i> 便携版 (免安装)</a>
+                        </div>
+                    </div>
+                    <div class="download-card">
+                        <div class="download-icon mac"><i class="fab fa-apple"></i></div>
+                        <h4>macOS</h4>
+                        <p>macOS 10.13+</p>
+                        <div class="download-links">
+                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-mac-arm64.dmg" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> Apple 芯片 DMG</a>
+                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-mac-x64.dmg" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> Intel 芯片 DMG</a>
+                        </div>
+                    </div>
+                    <div class="download-card">
+                        <div class="download-icon linux"><i class="fab fa-linux"></i></div>
+                        <h4>Linux</h4>
+                        <p>Ubuntu/Debian/Fedora</p>
+                        <div class="download-links">
+                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-x86_64.AppImage" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> AppImage</a>
+                            <a href="https://github.com/Youreln/FileFly/releases/download/v1.1.0/FileFly-1.1.0-linux-amd64.deb" target="_blank" class="dl-link"><i class="fas fa-file-archive"></i> DEB 包</a>
+                        </div>
+                    </div>
+                    <div class="download-card">
+                        <div class="download-icon mobile"><i class="fas fa-mobile-alt"></i></div>
+                        <h4>移动端 PWA</h4>
+                        <p>Android / iOS（无需安装商店）</p>
+                        <div class="download-links">
+                            <span class="dl-hint">① 打开主页 飞传 FileFly<br>② 浏览器菜单 → 添加到主屏幕<br>即可像 App 一样收发文件</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="download-buttons">
+                    <a href="https://github.com/Youreln/FileFly/releases" target="_blank" class="download-btn primary">
+                        <i class="fas fa-download"></i> 查看全部版本 (GitHub Releases)
+                    </a>
+                    <a href="https://github.com/Youreln/FileFly" target="_blank" class="download-btn secondary">
+                        <i class="fab fa-github"></i> 查看源码
+                    </a>
+                </div>
+                <p class="dl-hint" style="margin-top:14px;">
+                    macOS 首次打开提示"无法验证开发者"：右键 → 打开 即可；Linux AppImage 若无法运行，执行 <code>chmod +x 文件名</code> 或加 <code>--appimage-extract-and-run</code>。
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 <a href="https://github.com/Youreln/FileFly" target="_blank">Youreln</a> · 飞传 FileFly</p>
+        <p class="footer-links">
+            <a href="./"><i class="fas fa-bolt"></i> 在线互传</a>
+            <a href="https://github.com/Youreln/FileFly/releases" target="_blank"><i class="fas fa-download"></i> Releases</a>
+        </p>
+    </footer>
+</body>
+</html>
